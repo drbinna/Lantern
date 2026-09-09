@@ -66,7 +66,7 @@
 
   .poster-nav {
     position: absolute; inset: 0 0 auto 0; z-index: 40;
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center; justify-content: flex-end;
     padding: clamp(14px, 2.4cqw, 26px) clamp(16px, 3cqw, 32px);
     color: #fff; font-size: 14px;
   }
@@ -144,13 +144,15 @@
   .step h3 { margin: 0 0 8px; font-size: 21px; font-weight: 500; }
   .step p { margin: 0; color: var(--ink-2); }
 
-  .specs { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 80px); }
-  .specs h3 { margin: 0 0 10px; font-size: 21px; font-weight: 500; }
-  .specs p.note { margin: 0 0 20px; color: var(--ink-2); font-size: 15px; max-width: 48ch; }
-  table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
-  td { padding: 11px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
-  td:first-child { color: var(--ink-2); width: 44%; padding-right: 16px; }
-  td:last-child { font-variant-numeric: tabular-nums; }
+  .products { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 56px); }
+  .product .stage { background: var(--panel); border-radius: 16px; padding: clamp(16px, 3vw, 36px); margin-bottom: 22px; }
+  .product .stage svg { display: block; }
+  .product h3 { margin: 0 0 8px; font-size: 26px; font-weight: 500; letter-spacing: -0.01em; }
+  .product .lede { margin: 0 0 18px; color: var(--ink-2); max-width: 46ch; }
+  .kv { margin: 0; display: grid; }
+  .kv div { display: grid; grid-template-columns: 38% 1fr; gap: 16px; padding: 10px 0; border-top: 1px solid var(--rule); font-size: 15.5px; }
+  .kv dt { color: var(--ink-2); }
+  .kv dd { margin: 0; font-variant-numeric: tabular-nums; }
 
   .not { background: var(--ink); color: #fff; }
   .not h2.big { color: #fff; }
@@ -175,7 +177,7 @@
   .foot-meta { margin-top: 72px; padding-top: 20px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-2); flex-wrap: wrap; gap: 12px; }
 
   @media (max-width: 880px) {
-    .specs, .open, .not ul, .steps { grid-template-columns: 1fr; }
+    .products, .open, .not ul, .steps { grid-template-columns: 1fr; }
     .row, .axis { grid-template-columns: 1fr; gap: 8px; }
     .fill.tiny span { margin-left: calc(100% + 8px); font-size: 14px; }
   }
@@ -194,7 +196,6 @@
       </div>
 
       <nav class="poster-nav" aria-label="Primary">
-        <a class="mark" href="#top"><span class="dot" aria-hidden="true"></span>Lantern</a>
         <ul>
           <li><a href="#how">How it works</a></li>
           <li><a href="#specs">Aircraft and dock</a></li>
@@ -242,40 +243,94 @@
   </section>
 
   <section id="specs" class="wrap plain">
-    <h2 class="big">Built to be reliable, not impressive</h2>
-    <div class="specs">
-      <div>
+    <h2 class="big">Two products. One system.</h2>
+    <div class="products">
+      <article class="product">
+        <div class="stage" aria-hidden="true">
+          <svg viewBox="0 0 400 300" width="100%" role="img" aria-label="Isometric illustration of the Lantern aircraft">
+            <ellipse cx="200" cy="262" rx="120" ry="16" fill="#0d1b33" opacity=".08"/>
+            <ellipse cx="52" cy="140" rx="50" ry="28" fill="none" stroke="#1f4fd8" stroke-width="2" stroke-dasharray="4 5"/>
+            <ellipse cx="200" cy="66" rx="50" ry="28" fill="none" stroke="#1f4fd8" stroke-width="2" stroke-dasharray="4 5"/>
+            <ellipse cx="348" cy="140" rx="50" ry="28" fill="none" stroke="#1f4fd8" stroke-width="2" stroke-dasharray="4 5"/>
+            <ellipse cx="52" cy="140" rx="42" ry="24" fill="#ffffff" stroke="#cfd6df" stroke-width="1.5" opacity=".9"/>
+            <ellipse cx="200" cy="66" rx="42" ry="24" fill="#ffffff" stroke="#cfd6df" stroke-width="1.5" opacity=".9"/>
+            <ellipse cx="348" cy="140" rx="42" ry="24" fill="#ffffff" stroke="#cfd6df" stroke-width="1.5" opacity=".9"/>
+            <line x1="150" y1="145" x2="62" y2="142" stroke="#d5dae2" stroke-width="12" stroke-linecap="round"/>
+            <line x1="200" y1="120" x2="200" y2="74" stroke="#d5dae2" stroke-width="12" stroke-linecap="round"/>
+            <line x1="250" y1="145" x2="338" y2="142" stroke="#d5dae2" stroke-width="12" stroke-linecap="round"/>
+            <line x1="150" y1="145" x2="62" y2="142" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+            <line x1="200" y1="120" x2="200" y2="74" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+            <line x1="250" y1="145" x2="338" y2="142" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+            <ellipse cx="52" cy="138" rx="7" ry="4" fill="#0d1b33"/>
+            <ellipse cx="200" cy="64" rx="7" ry="4" fill="#0d1b33"/>
+            <ellipse cx="348" cy="138" rx="7" ry="4" fill="#0d1b33"/>
+            <polygon points="150,145 200,170 200,192 150,167" fill="#e6e9ee"/>
+            <polygon points="200,170 250,145 250,167 200,192" fill="#d5dae2"/>
+            <polygon points="200,120 250,145 200,170 150,145" fill="#ffffff" stroke="#cfd6df" stroke-width="1"/>
+            <polygon points="200,132 226,145 200,158 174,145" fill="#eef1f4"/>
+            <circle cx="166" cy="192" r="13" fill="#0d1b33"/>
+            <circle cx="166" cy="192" r="6" fill="#1f4fd8"/>
+            <circle cx="164" cy="190" r="2" fill="#ffffff"/>
+            <line x1="235" y1="180" x2="235" y2="204" stroke="#b4b9c3" stroke-width="3" stroke-linecap="round"/>
+            <line x1="200" y1="170" x2="200" y2="220" stroke="#d5dae2" stroke-width="12" stroke-linecap="round"/>
+            <line x1="200" y1="170" x2="200" y2="220" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+            <ellipse cx="200" cy="230" rx="50" ry="28" fill="none" stroke="#1f4fd8" stroke-width="2" stroke-dasharray="4 5"/>
+            <ellipse cx="200" cy="230" rx="42" ry="24" fill="#ffffff" stroke="#cfd6df" stroke-width="1.5" opacity=".9"/>
+            <ellipse cx="200" cy="228" rx="7" ry="4" fill="#0d1b33"/>
+            <circle cx="250" cy="152" r="3" fill="#1f4fd8"/>
+          </svg>
+        </div>
         <h3>Aircraft</h3>
-        <p class="note">A camera with rotors. Light shell, visible gimbal, your safety office's name on the side.</p>
-        <table>
-          <tr><td>Configuration</td><td>Four-rotor, folding arms, guarded props</td></tr>
-          <tr><td>Motor-to-motor</td><td>400 mm</td></tr>
-          <tr><td>Weight, all-up</td><td>2.0 kg</td></tr>
-          <tr><td>Endurance</td><td>35 min, full payload, 15 kt wind</td></tr>
-          <tr><td>Daylight camera</td><td>30× optical zoom, stabilized</td></tr>
-          <tr><td>Thermal imager</td><td>640 × 512, uncooled</td></tr>
-          <tr><td>Speaker and light</td><td>Two-way audio, spotlight for night calls</td></tr>
-          <tr><td>Weather</td><td>−10 °C to 45 °C, gusts to 25 kt, light rain</td></tr>
-          <tr><td>Noise at 200 ft</td><td>Under 65 dBA</td></tr>
-          <tr><td>Components</td><td>NDAA compliant, Remote ID equipped</td></tr>
-        </table>
-      </div>
-      <div>
+        <p class="lede">A camera with rotors. White shell, guarded props, a visible gimbal, and your safety office's name on the side. Built to be recognized, not to impress.</p>
+        <dl class="kv">
+          <div><dt>Motor to motor</dt><dd>400 mm</dd></div>
+          <div><dt>Weight</dt><dd>2.0 kg all-up</dd></div>
+          <div><dt>Endurance</dt><dd>35 min, full payload</dd></div>
+          <div><dt>Cameras</dt><dd>30× optical zoom and 640 × 512 thermal</dd></div>
+          <div><dt>Weather</dt><dd>−10 °C to 45 °C, gusts to 25 kt</dd></div>
+          <div><dt>Noise at 200 ft</dt><dd>Under 65 dBA</dd></div>
+        </dl>
+      </article>
+
+      <article class="product">
+        <div class="stage" aria-hidden="true">
+          <svg viewBox="0 0 400 300" width="100%" role="img" aria-label="Isometric illustration of the Lantern rooftop dock with its lid open">
+            <ellipse cx="200" cy="268" rx="150" ry="18" fill="#0d1b33" opacity=".08"/>
+            <polygon points="80,170 200,110 320,170 200,230" fill="#eef1f4" stroke="#cfd6df" stroke-width="1"/>
+            <polygon points="80,170 200,230 200,262 80,202" fill="#d5dae2"/>
+            <polygon points="200,230 320,170 320,202 200,262" fill="#c3c9d3"/>
+            <polygon points="80,170 200,110 150,66 30,126" fill="#ffffff" stroke="#cfd6df" stroke-width="1"/>
+            <polygon points="200,110 320,170 370,126 250,66" fill="#ffffff" stroke="#cfd6df" stroke-width="1"/>
+            <polygon points="80,170 150,66 148,72 82,176" fill="#b4b9c3"/>
+            <polygon points="320,170 250,66 252,72 318,176" fill="#b4b9c3"/>
+            <ellipse cx="200" cy="170" rx="78" ry="39" fill="#ffffff" stroke="#cfd6df" stroke-width="1"/>
+            <ellipse cx="200" cy="170" rx="52" ry="26" fill="none" stroke="#1f4fd8" stroke-width="1.5" opacity=".5"/>
+            <ellipse cx="200" cy="170" rx="26" ry="13" fill="none" stroke="#1f4fd8" stroke-width="1.5" opacity=".5"/>
+            <line x1="122" y1="170" x2="278" y2="170" stroke="#1f4fd8" stroke-width="1" opacity=".35"/>
+            <line x1="200" y1="131" x2="200" y2="209" stroke="#1f4fd8" stroke-width="1" opacity=".35"/>
+            <ellipse cx="164" cy="152" rx="16" ry="9" fill="#ffffff" stroke="#cfd6df"/>
+            <ellipse cx="236" cy="152" rx="16" ry="9" fill="#ffffff" stroke="#cfd6df"/>
+            <ellipse cx="164" cy="188" rx="16" ry="9" fill="#ffffff" stroke="#cfd6df"/>
+            <ellipse cx="236" cy="188" rx="16" ry="9" fill="#ffffff" stroke="#cfd6df"/>
+            <polygon points="200,158 218,167 200,176 182,167" fill="#ffffff" stroke="#cfd6df"/>
+            <polygon points="182,167 200,176 200,184 182,175" fill="#e6e9ee"/>
+            <polygon points="200,176 218,167 218,175 200,184" fill="#d5dae2"/>
+            <circle cx="190" cy="182" r="4" fill="#0d1b33"/>
+            <circle cx="308" cy="196" r="4" fill="#1f4fd8"/>
+            <rect x="286" y="206" width="18" height="6" rx="2" fill="#b4b9c3"/>
+          </svg>
+        </div>
         <h3>Dock</h3>
-        <p class="note">The part that decides whether the program works. Every number here is a monthly report you'll receive.</p>
-        <table>
-          <tr><td>Placement</td><td>Rooftop, wired power and network</td></tr>
-          <tr><td>Coverage per dock</td><td>About half a mile, 90 s to overhead</td></tr>
-          <tr><td>Launch and recover</td><td>Fully automatic, no one present</td></tr>
-          <tr><td>Landing accuracy</td><td>Within 10 cm in 15 kt wind</td></tr>
-          <tr><td>Recharge</td><td>To 80% in 35 min</td></tr>
-          <tr><td>Climate</td><td>Heated and cooled; cold starts across full range</td></tr>
-          <tr><td>Wind survival, closed</td><td>90 mph</td></tr>
-          <tr><td>Power loss</td><td>Battery backup for two launches</td></tr>
-          <tr><td>Self-test</td><td>Continuous; alerts before a launch would fail</td></tr>
-          <tr><td>Availability target</td><td>99.5% monthly</td></tr>
-        </table>
-      </div>
+        <p class="lede">A rooftop box that opens, launches, catches and charges the aircraft with no one present. This is the part that decides whether the program works.</p>
+        <dl class="kv">
+          <div><dt>Coverage</dt><dd>About half a mile, 90 s to overhead</dd></div>
+          <div><dt>Landing</dt><dd>Within 10 cm, self-centering pad</dd></div>
+          <div><dt>Recharge</dt><dd>To 80% in 35 min</dd></div>
+          <div><dt>Climate</dt><dd>Heated and cooled, cold starts year-round</dd></div>
+          <div><dt>Power loss</dt><dd>Two launches on battery backup</dd></div>
+          <div><dt>Availability</dt><dd>99.5% monthly, reported to you</dd></div>
+        </dl>
+      </article>
     </div>
   </section>
 
