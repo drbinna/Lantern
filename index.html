@@ -171,10 +171,41 @@
   .ledger .rowl .r { color: var(--ink-2); }
   .ledger .rowl .cancel { color: var(--cobalt); font-weight: 500; }
 
-  footer { padding-top: clamp(56px, 8vw, 120px); padding-bottom: 48px; }
-  footer h2 { margin: 0 0 20px; font-variation-settings: "wdth" 118; font-weight: 700; font-size: clamp(38px, 7vw, 104px); line-height: .95; letter-spacing: -0.03em; max-width: 14ch; }
-  footer p { max-width: var(--measure); color: var(--ink-2); margin: 0 0 28px; }
-  .foot-meta { margin-top: 72px; padding-top: 20px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-2); flex-wrap: wrap; gap: 12px; }
+  .foot { position: relative; overflow: hidden; margin: clamp(16px, 3vw, 32px); border-radius: 24px; background: #0b1730; color: rgba(245,247,251,.72); }
+  .foot-inner { position: relative; z-index: 2; max-width: 1280px; margin: 0 auto; padding: clamp(36px, 5vw, 64px) clamp(24px, 4vw, 56px) clamp(24px, 3vw, 40px); }
+  .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: clamp(28px, 4vw, 64px); padding-bottom: clamp(28px, 4vw, 48px); }
+  .foot-brand p { margin: 14px 0 20px; max-width: 34ch; font-size: 15px; line-height: 1.6; }
+  .foot-mark { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+  .foot-mark .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--cobalt); box-shadow: 0 0 0 3px rgba(31,79,216,.28); }
+  .foot-cta { display: inline-block; padding: 12px 18px; border-radius: 6px; background: var(--cobalt); color: #fff; font-weight: 500; font-size: 15px; }
+  .foot-cta:hover { background: #2a5ef0; }
+  .foot h4 { margin: 0 0 18px; color: #fff; font-size: 17px; font-weight: 500; }
+  .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; font-size: 15px; }
+  .foot li { position: relative; }
+  .foot li a:hover { color: #fff; }
+  .foot li.pulse a::after { content: ""; position: absolute; top: 0; margin-left: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--cobalt); animation: fpulse 1.6s ease-in-out infinite; }
+  @keyframes fpulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+  .foot .contact li { display: flex; align-items: center; gap: 10px; }
+  .foot .contact svg { width: 18px; height: 18px; fill: none; stroke: var(--cobalt); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .foot-rule { border: 0; border-top: 1px solid rgba(255,255,255,.14); margin: 0 0 24px; }
+  .foot-bottom { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 14px; }
+  .foot-bottom p { margin: 0; }
+  .foot-social { display: flex; gap: 22px; }
+  .foot-social a:hover { color: #fff; }
+  .foot-fx { position: relative; z-index: 3; height: clamp(180px, 30vw, 440px); margin: clamp(-60px, -8vw, -140px) 0 clamp(-40px, -6vw, -110px); cursor: pointer; }
+  .foot-fx svg { width: 100%; height: 100%; display: block; }
+  .foot-fx text { font-family: "Saira Extra Condensed", "Arial Narrow", sans-serif; font-weight: 800; font-size: 92px; text-transform: uppercase; letter-spacing: .02em; fill: transparent; stroke-width: .35; }
+  .fx-ghost { stroke: rgba(255,255,255,.35); opacity: 0; transition: opacity .3s; }
+  .foot-fx.on .fx-ghost { opacity: .7; }
+  .fx-draw { stroke: rgba(31,79,216,.85); stroke-dasharray: 1000; stroke-dashoffset: 1000; }
+  .foot-fx.seen .fx-draw { animation: fxdraw 4s ease-in-out forwards; }
+  @keyframes fxdraw { to { stroke-dashoffset: 0; } }
+  .fx-glow { stroke-width: .5; opacity: 0; transition: opacity .25s; }
+  .foot-fx.on .fx-glow { opacity: 1; }
+  .foot-bg { position: absolute; inset: 0; z-index: 1; background: radial-gradient(125% 125% at 50% 10%, rgba(11,23,48,0) 50%, rgba(31,79,216,.35) 100%); }
+  @media (prefers-reduced-motion: reduce) { .foot-fx.seen .fx-draw { animation: none; stroke-dashoffset: 0; } .foot li.pulse a::after { animation: none; } }
+  @media (max-width: 1024px) { .foot-grid { grid-template-columns: 1fr 1fr; } .foot-fx { display: none; } }
+  @media (max-width: 560px) { .foot-grid { grid-template-columns: 1fr; } }
 
   @media (max-width: 880px) {
     .products, .open, .not ul, .steps { grid-template-columns: 1fr; }
@@ -368,14 +399,76 @@
   </section>
 </main>
 
-<footer id="contact" class="wrap">
-  <h2>Start with one dock and a hundred flights.</h2>
-  <p>Pilot programs run with campus police departments that hold sworn authority. We'll handle the FAA waiver package with you, site the first dock, and report uptime from day one.</p>
-  <a class="btn primary" href="mailto:hello@example.com">Talk to us about a pilot</a>
-  <div class="foot-meta">
-    <span>Lantern is a drone-as-first-responder system for outdoor campus environments.</span>
-    <span>Operates under Part 107 with BVLOS authorization.</span>
+<footer id="contact" class="foot">
+  <div class="foot-inner">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="foot-mark"><span class="dot" aria-hidden="true"></span><span>Lantern</span></div>
+        <p>A drone-as-first-responder system for outdoor campus environments. Eyes on the scene before the first officer arrives.</p>
+        <a class="foot-cta" href="mailto:hello@example.com">Talk to us about a pilot</a>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#specs">Aircraft and dock</a></li>
+          <li><a href="#limits">What it won't do</a></li>
+          <li><a href="#policy">Policy and transparency</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Use-policy template</a></li>
+          <li><a href="#">Example public flight log</a></li>
+          <li><a href="#">Part 107 and Part 108 notes</a></li>
+          <li class="pulse"><a href="#">Pilot program FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul class="contact">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><a href="mailto:hello@example.com">hello@example.com</a></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg><a href="tel:+10000000000">+1 (000) 000-0000</a></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Tulsa, Oklahoma</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="foot-rule">
+
+    <div class="foot-bottom">
+      <div class="foot-social">
+        <a href="#">LinkedIn</a>
+        <a href="#">X</a>
+        <a href="#">YouTube</a>
+      </div>
+      <p>&copy; <span id="year"></span> Lantern. All rights reserved.</p>
+    </div>
   </div>
+
+  <div class="foot-fx" aria-hidden="true">
+    <svg id="fx" viewBox="0 0 300 100" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="fxGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="300" y2="0">
+          <stop offset="0%" stop-color="#1f4fd8"/>
+          <stop offset="35%" stop-color="#7fb0ff"/>
+          <stop offset="60%" stop-color="#ffffff"/>
+          <stop offset="85%" stop-color="#5dcaa5"/>
+          <stop offset="100%" stop-color="#1f4fd8"/>
+        </linearGradient>
+        <radialGradient id="fxMask" gradientUnits="userSpaceOnUse" cx="150" cy="50" r="60">
+          <stop offset="0%" stop-color="#fff"/>
+          <stop offset="100%" stop-color="#000"/>
+        </radialGradient>
+        <mask id="fxM"><rect x="0" y="0" width="300" height="100" fill="url(#fxMask)"/></mask>
+      </defs>
+      <text class="fx-ghost" x="50%" y="50%" text-anchor="middle" dominant-baseline="central">Lantern</text>
+      <text class="fx-draw" x="50%" y="50%" text-anchor="middle" dominant-baseline="central">Lantern</text>
+      <text class="fx-glow" x="50%" y="50%" text-anchor="middle" dominant-baseline="central" stroke="url(#fxGrad)" mask="url(#fxM)">Lantern</text>
+    </svg>
+  </div>
+  <div class="foot-bg" aria-hidden="true"></div>
 </footer>
 
 <script>
@@ -470,6 +563,33 @@
   window.addEventListener('scroll', function () { target = read(); }, { passive: true });
   window.addEventListener('resize', function () { target = read(); refit(); });
   requestAnimationFrame(loop);
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+  var fx = document.querySelector('.foot-fx');
+  var fxSvg = document.getElementById('fx');
+  var fxMask = document.getElementById('fxMask');
+  if (fx && fxSvg && fxMask) {
+    var mx = 150, my = 50, tx = 150, ty = 50, fxRaf = 0;
+    function fxLoop() {
+      mx += (tx - mx) * 0.18; my += (ty - my) * 0.18;
+      fxMask.setAttribute('cx', mx.toFixed(2)); fxMask.setAttribute('cy', my.toFixed(2));
+      if (Math.abs(tx - mx) > 0.05 || Math.abs(ty - my) > 0.05) fxRaf = requestAnimationFrame(fxLoop); else fxRaf = 0;
+    }
+    fx.addEventListener('mousemove', function (e) {
+      var r = fxSvg.getBoundingClientRect();
+      tx = ((e.clientX - r.left) / r.width) * 300;
+      ty = ((e.clientY - r.top) / r.height) * 100;
+      if (!fxRaf) fxRaf = requestAnimationFrame(fxLoop);
+    });
+    fx.addEventListener('mouseenter', function () { fx.classList.add('on'); });
+    fx.addEventListener('mouseleave', function () { fx.classList.remove('on'); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) { fx.classList.add('seen'); io.disconnect(); }
+      }, { threshold: 0.3 });
+      io.observe(fx);
+    } else { fx.classList.add('seen'); }
+  }
 })();
 </script>
 </body>
