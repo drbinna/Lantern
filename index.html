@@ -94,24 +94,21 @@
   .poster-copy {
     position: absolute; inset: auto 0 0 0; z-index: 30; will-change: transform;
     padding: clamp(1.1rem, 4.5cqw, 2.25rem); min-height: 38%;
-    display: flex; flex-direction: column; color: #f5f7fb;
+    display: flex; flex-direction: column; justify-content: flex-end; color: #f5f7fb;
   }
   .poster-copy .veil { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(0deg, rgba(13,27,51,.88) 0%, rgba(31,79,216,.28) 55%, transparent 100%); }
   .poster-copy > * { position: relative; z-index: 1; }
-  .poster-copy .keys { display: flex; justify-content: space-between; gap: 12px; font-size: clamp(10px, 1.7cqw, 12px); letter-spacing: .14em; color: rgba(245,247,251,.72); font-weight: 400; }
   .poster-copy h2 {
-    margin: clamp(.7rem, 2.2cqw, 1.15rem) 0 0;
+    margin: 0;
     font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600;
     font-size: clamp(1.5rem, 4.4cqw, 2.4rem); line-height: 1.15; letter-spacing: -.005em;
   }
   .poster-copy p.body { margin: clamp(.5rem, 1.6cqw, .8rem) 0 0; max-width: 52ch; font-size: clamp(13px, 1.8cqw, 15px); line-height: 1.55; color: rgba(245,247,251,.86); }
   .poster-copy p.sub { margin: clamp(.65rem, 2cqw, 1rem) 0 0; font-size: clamp(1rem, 2.4cqw, 1.2rem); font-weight: 500; line-height: 1.35; }
-  .poster-copy .meta { margin-top: auto; padding-top: clamp(.7rem, 2.4cqw, 1.1rem); display: flex; justify-content: space-between; gap: 12px; font-size: clamp(10px, 1.6cqw, 12px); letter-spacing: .06em; color: rgba(245,247,251,.72); font-variant-numeric: tabular-nums; }
 
   @media (max-width: 720px) {
     .poster-nav ul li:not(:last-child) { display: none; }
     .poster-title { top: 11%; }
-    .poster-copy .keys span:nth-child(2) { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     .poster { height: auto; }
@@ -214,10 +211,8 @@
 
       <div class="poster-copy" id="posterCopy">
         <div class="veil" aria-hidden="true"></div>
-        <div class="keys"><span>Respond</span><span>See</span><span>Stand down</span></div>
         <h2>Eyes on the scene before the first officer arrives.</h2>
         <p class="body">A call comes in. A small drone lifts off the nearest rooftop and sends live video to dispatch and the officers on their way — ninety seconds, where a patrol car takes twelve minutes. No patrols, no face recognition. A person makes every decision.</p>
-        <div class="meta"><span>Lantern</span><span>Campus drone as first responder</span><span>Pilot programs, 2026</span></div>
       </div>
     </article>
   </div>
