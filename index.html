@@ -138,11 +138,66 @@
   .axis { display: grid; grid-template-columns: 200px 1fr; gap: 20px; margin-top: 4px; }
   .axis .ticks { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 
-  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(20px, 3vw, 48px); counter-reset: step; }
-  .step { border-top: 2px solid var(--ink); padding-top: 18px; }
-  .step::before { counter-increment: step; content: counter(step); display: block; font-size: 15px; color: var(--cobalt); font-weight: 700; margin-bottom: 14px; }
-  .step h3 { margin: 0 0 8px; font-size: 21px; font-weight: 500; }
-  .step p { margin: 0; color: var(--ink-2); }
+
+  /* Map frames */
+  .map-frame { position: relative; overflow: hidden; border-radius: 16px; background: var(--ink); }
+  .map-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .map-frame.aerial { aspect-ratio: 3 / 4; }
+  .map-frame.aerial img { object-position: 0 50%; }
+  .map-frame.illus { aspect-ratio: 1 / 1; }
+  .map-frame .map-fx { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  /* How it works: sticky aerial map driven by the steps */
+  .how-grid { display: grid; grid-template-columns: minmax(280px, 42%) 1fr; gap: clamp(28px, 5vw, 80px); align-items: start; }
+  .how-map { position: sticky; top: 24px; }
+  .how-steps { display: grid; }
+  .step { min-height: 62vh; display: flex; flex-direction: column; justify-content: center; border-top: 2px solid var(--rule); padding: 18px 0; transition: border-color .4s; }
+  .step h3 { margin: 0 0 8px; font-size: 24px; font-weight: 500; color: var(--ink-2); transition: color .4s; }
+  .step p { margin: 0; color: var(--ink-2); max-width: 46ch; opacity: .6; transition: opacity .4s; }
+  .step.on { border-color: var(--cobalt); }
+  .step.on h3 { color: var(--ink); }
+  .step.on p { opacity: 1; }
+  .map-fx .s1, .map-fx .s2, .map-fx .s3 { opacity: 0; transition: opacity .5s; }
+  .how[data-step="1"] .s1, .how[data-step="2"] .s1, .how[data-step="3"] .s1,
+  .how[data-step="2"] .s2, .how[data-step="3"] .s2,
+  .how[data-step="3"] .s3 { opacity: 1; }
+  .map-fx .ring { fill: none; stroke: #e24b4a; stroke-width: 1.5; transform-origin: 52px 330px; }
+  .how[data-step="1"] .ring, .how[data-step="2"] .ring, .how[data-step="3"] .ring { animation: ping 1.8s ease-out infinite; }
+  .map-fx .r2 { animation-delay: .9s !important; }
+  @keyframes ping { 0% { transform: scale(.4); opacity: .9; } 100% { transform: scale(3); opacity: 0; } }
+  .map-fx .dockring { fill: none; stroke: #1f4fd8; stroke-width: 1.5; opacity: .8; transform-origin: 190px 238px; transition: transform .6s, opacity .6s; }
+  .how[data-step="2"] .dockring, .how[data-step="3"] .dockring { transform: scale(1.8); opacity: .35; }
+  .map-fx .route { fill: none; stroke: #fff; stroke-width: 1.5; stroke-dasharray: 4 4; opacity: .85; }
+  .map-fx .fov { fill: #1f4fd8; fill-opacity: .22; stroke: #7fb0ff; stroke-width: 1; }
+  .map-fx .corner { fill: none; stroke: #fff; stroke-width: 1.5; stroke-linecap: round; }
+  .map-tag { position: absolute; left: 12px; right: 12px; bottom: 12px; background: rgba(13,27,51,.82); color: #fff; border-radius: 8px; padding: 10px 12px; font-size: 13.5px; line-height: 1.4; min-height: 42px; backdrop-filter: blur(4px); }
+  .map-tag .t { display: none; }
+  .map-tag b { font-weight: 500; color: #9fc0ff; font-variant-numeric: tabular-nums; margin-right: 6px; }
+  .how[data-step="0"] .t0, .how[data-step="1"] .t1, .how[data-step="2"] .t2, .how[data-step="3"] .t3 { display: block; }
+
+  /* What it will not do: illustrated map that responds to each item */
+  .not-grid { display: grid; grid-template-columns: 1fr minmax(280px, 44%); gap: clamp(28px, 5vw, 80px); align-items: start; }
+  .not-map { position: sticky; top: 24px; }
+  .not-list { list-style: none; margin: 0; padding: 0; }
+  .not-list li { padding: 22px 0; border-top: 1px solid rgba(255,255,255,.22); font-size: 19px; line-height: 1.4; opacity: .5; transition: opacity .4s; }
+  .not-list li.on { opacity: 1; }
+  .not-list li strong { font-weight: 500; display: block; }
+  .not-list li span { color: rgba(255,255,255,.7); font-size: 16px; display: block; margin-top: 4px; }
+  .map-fx .l1, .map-fx .l2, .map-fx .l3, .map-fx .l4, .map-fx .l5, .map-fx .l6 { opacity: 0; transition: opacity .45s; }
+  .not[data-limit="1"] .l1, .not[data-limit="2"] .l2, .not[data-limit="3"] .l3, .not[data-limit="4"] .l4, .not[data-limit="5"] .l5, .not[data-limit="6"] .l6 { opacity: 1; }
+  .map-fx .ml { font-family: "Archivo", sans-serif; font-size: 11px; font-weight: 500; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: #0d1b33; stroke-width: 3px; stroke-linejoin: round; }
+  .map-frame.illus::after { content: ""; position: absolute; inset: 0; background: rgba(13,27,51,.28); pointer-events: none; }
+  .map-frame.illus .map-fx { z-index: 1; }
+
+  @media (prefers-reduced-motion: reduce) { .map-fx .ring { animation: none !important; opacity: .6; } }
+  @media (max-width: 880px) {
+    .how-grid, .not-grid { grid-template-columns: 1fr; }
+    .how-map, .not-map { position: sticky; top: 0; z-index: 2; }
+    .map-frame.aerial { aspect-ratio: 4 / 3; }
+    .map-frame.aerial img { object-position: 0 40%; }
+    .not-grid { display: flex; flex-direction: column-reverse; }
+    .step { min-height: 46vh; }
+  }
 
   .products { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 56px); }
   .product .stage { background: var(--panel); border-radius: 16px; padding: clamp(16px, 3vw, 36px); margin-bottom: 22px; }
@@ -156,10 +211,6 @@
 
   .not { background: var(--ink); color: #fff; }
   .not h2.big { color: #fff; }
-  .not ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(24px, 4vw, 64px); }
-  .not li { padding: 20px 0; border-top: 1px solid rgba(255,255,255,.22); font-size: 19px; line-height: 1.4; }
-  .not li strong { font-weight: 500; display: block; }
-  .not li span { color: rgba(255,255,255,.7); font-size: 16px; display: block; margin-top: 4px; }
 
   .open { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 80px); align-items: start; }
   .open p { max-width: var(--measure); color: var(--ink-2); margin: 0 0 16px; }
@@ -207,7 +258,7 @@
   @media (max-width: 560px) { .foot-grid { grid-template-columns: 1fr; } }
 
   @media (max-width: 880px) {
-    .products, .open, .not ul, .steps { grid-template-columns: 1fr; }
+    .products, .open { grid-template-columns: 1fr; }
     .row, .axis { grid-template-columns: 1fr; gap: 8px; }
     .fill.tiny span { margin-left: calc(100% + 8px); font-size: 14px; }
   }
@@ -263,12 +314,53 @@
     </div>
   </section>
 
-  <section id="how" class="wrap plain">
+  <section id="how" class="wrap plain how" data-step="0">
     <h2 class="big">What happens when a call comes in</h2>
-    <div class="steps">
-      <div class="step"><h3>Something raises the alarm</h3><p>A 911 call, a blue-light phone, a panic button, a door alarm. Lantern never decides on its own that something is wrong. It responds to the alarms your campus already has.</p></div>
-      <div class="step"><h3>Dispatch launches with one action</h3><p>The dispatcher sends the aircraft to the address without leaving the console. The nearest dock opens, the aircraft launches, and it flies itself there — around trees, around buildings.</p></div>
-      <div class="step"><h3>Everyone en route sees the same picture</h3><p>Live video reaches dispatch, incident command, and the phone of every responding officer. Which building. Which door. Who is outside it. Often, that nothing is happening at all.</p></div>
+    <div class="how-grid">
+      <div class="how-map">
+        <div class="map-frame aerial">
+          <img src="assets/campus-aerial.jpg" alt="Aerial view of the campus" draggable="false">
+          <svg class="map-fx" viewBox="0 0 300 400" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <path id="route" d="M190,238 C160,240 95,270 52,330" />
+            </defs>
+            <g class="s1">
+              <circle class="ring r1" cx="52" cy="330" r="8"/>
+              <circle class="ring r2" cx="52" cy="330" r="8"/>
+              <circle cx="52" cy="330" r="4" fill="#e24b4a"/>
+            </g>
+            <g class="s0">
+              <circle class="dockring" cx="190" cy="238" r="9"/>
+              <circle cx="190" cy="238" r="4" fill="#1f4fd8"/>
+            </g>
+            <g class="s2">
+              <use href="#route" class="route"/>
+              <g class="drone">
+                <circle r="6" fill="#fff" stroke="#1f4fd8" stroke-width="1.5"/>
+                <circle r="1.8" fill="#1f4fd8"/>
+                <animateMotion id="droneMove" dur="2.4s" begin="indefinite" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" keyTimes="0;1">
+                  <mpath href="#route"/>
+                </animateMotion>
+              </g>
+            </g>
+            <g class="s3">
+              <ellipse class="fov" cx="52" cy="330" rx="34" ry="22"/>
+              <path class="corner" d="M20,306 h8 M20,306 v8 M84,306 h-8 M84,306 v8 M20,354 h8 M20,354 v-8 M84,354 h-8 M84,354 v-8"/>
+            </g>
+          </svg>
+          <div class="map-tag">
+            <span class="t t0">The campus at rest. Aircraft docked on a rooftop near the center.</span>
+            <span class="t t1"><b>0:00</b> Blue-light call from the lot by the arena.</span>
+            <span class="t t2"><b>0:14</b> Launched from the nearest dock. Flying itself there.</span>
+            <span class="t t3"><b>1:30</b> Live video to dispatch and every unit on the way.</span>
+          </div>
+        </div>
+      </div>
+      <div class="how-steps">
+        <div class="step" data-i="1"><h3>Something raises the alarm</h3><p>A 911 call, a blue-light phone, a panic button, a door alarm. Lantern never decides on its own that something is wrong. It responds to the alarms your campus already has.</p></div>
+        <div class="step" data-i="2"><h3>Dispatch launches with one action</h3><p>The dispatcher sends the aircraft to the address without leaving the console. The nearest dock opens, the aircraft launches, and it flies itself there — around trees, around buildings.</p></div>
+        <div class="step" data-i="3"><h3>Everyone en route sees the same picture</h3><p>Live video reaches dispatch, incident command, and the phone of every responding officer. Which building. Which door. Who is outside it. Often, that nothing is happening at all.</p></div>
+      </div>
     </div>
   </section>
 
@@ -364,17 +456,58 @@
     </div>
   </section>
 
-  <section id="limits" class="not">
+  <section id="limits" class="not" data-limit="0">
     <div class="wrap plain" style="border-bottom:0">
       <h2 class="big">What it will not do</h2>
-      <ul>
-        <li><strong>Identify people.</strong><span>No facial recognition, no biometrics. Not configurable, not available.</span></li>
-        <li><strong>Decide someone is a threat.</strong><span>No automated weapon or behavior detection. A person looks at the video and makes the call.</span></li>
-        <li><strong>Patrol.</strong><span>The aircraft does not fly on a schedule or watch the campus. It leaves the dock when there is a call and returns when the call is over.</span></li>
-        <li><strong>See indoors.</strong><span>It gives you the building, the entrances, the exits and the approach. It does not give you the hallway.</span></li>
-        <li><strong>Fly where you've said it can't.</strong><span>Residence hall windows, the health center, the neighbors' property. Exclusion zones are enforced in the flight software, not in a policy binder.</span></li>
-        <li><strong>Keep footage it doesn't need.</strong><span>Non-incident flights delete themselves on a short clock you set. Every view is logged.</span></li>
-      </ul>
+      <div class="not-grid">
+        <ul class="not-list">
+          <li data-i="1"><strong>Identify people.</strong><span>No facial recognition, no biometrics. Not configurable, not available.</span></li>
+          <li data-i="2"><strong>Decide someone is a threat.</strong><span>No automated weapon or behavior detection. A person looks at the video and makes the call.</span></li>
+          <li data-i="3"><strong>Patrol.</strong><span>The aircraft does not fly on a schedule or watch the campus. It leaves the dock when there is a call and returns when the call is over.</span></li>
+          <li data-i="4"><strong>See indoors.</strong><span>It gives you the building, the entrances, the exits and the approach. It does not give you the hallway.</span></li>
+          <li data-i="5"><strong>Fly where you've said it can't.</strong><span>Residence hall windows, the health center, the neighbors' property. Exclusion zones are enforced in the flight software, not in a policy binder.</span></li>
+          <li data-i="6"><strong>Keep footage it doesn't need.</strong><span>Non-incident flights delete themselves on a short clock you set. Every view is logged.</span></li>
+        </ul>
+        <div class="not-map">
+          <div class="map-frame illus">
+            <img src="assets/campus-map.png" alt="Illustrated campus map" draggable="false">
+            <svg class="map-fx" viewBox="0 0 447 447" aria-hidden="true">
+              <defs>
+                <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                  <line x1="0" y1="0" x2="0" y2="6" stroke="#e24b4a" stroke-width="1.6"/>
+                </pattern>
+              </defs>
+              <g class="l1 l2 people">
+                <circle cx="246" cy="232" r="14" fill="none" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="246" cy="232" r="4" fill="none" stroke="#fff" stroke-width="1.5"/>
+                <line x1="226" y1="252" x2="266" y2="212" stroke="#e24b4a" stroke-width="2.5" stroke-linecap="round"/>
+                <text x="246" y="264" class="ml">No identification</text>
+              </g>
+              <g class="l3 docked">
+                <circle cx="222" cy="298" r="12" fill="#1f4fd8" opacity=".18"/>
+                <circle cx="222" cy="298" r="5" fill="#fff" stroke="#1f4fd8" stroke-width="1.5"/>
+                <text x="222" y="322" class="ml">Docked until called</text>
+              </g>
+              <g class="l4 exterior">
+                <path d="M222,246 L262,300 L222,354 L182,300 Z" fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="4 3"/>
+                <text x="222" y="370" class="ml">Exterior only</text>
+              </g>
+              <g class="l5 nofly">
+                <circle cx="336" cy="152" r="42" fill="url(#hatch)" stroke="#e24b4a" stroke-width="1.5"/>
+                <circle cx="52" cy="184" r="28" fill="url(#hatch)" stroke="#e24b4a" stroke-width="1.5"/>
+                <circle cx="84" cy="352" r="34" fill="url(#hatch)" stroke="#e24b4a" stroke-width="1.5"/>
+                <text x="336" y="206" class="ml">Residence halls</text>
+                <text x="52" y="222" class="ml">Health center</text>
+                <text x="84" y="396" class="ml">Neighbors</text>
+              </g>
+              <g class="l6 wipe">
+                <rect x="140" y="60" width="160" height="24" rx="4" fill="#0d1b33" opacity=".85"/>
+                <text x="220" y="76" class="ml" style="opacity:1">Footage deleted after 30 days</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -589,6 +722,44 @@
       io.observe(fx);
     } else { fx.classList.add('seen'); }
   }
+})();
+
+(function () {
+  var how = document.getElementById('how');
+  var steps = Array.prototype.slice.call(how.querySelectorAll('.step'));
+  var move = document.getElementById('droneMove');
+  var lastStep = 0;
+  function setStep(n) {
+    if (n === lastStep) return;
+    how.setAttribute('data-step', n);
+    steps.forEach(function (el) { el.classList.toggle('on', +el.dataset.i === n); });
+    if (n >= 2 && lastStep < 2 && move && move.beginElement) { try { move.beginElement(); } catch (e) {} }
+    lastStep = n;
+  }
+  var ioSteps = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) { if (en.isIntersecting) setStep(+en.target.dataset.i); });
+  }, { threshold: 0.55 });
+  steps.forEach(function (el) { ioSteps.observe(el); });
+  var ioHow = new IntersectionObserver(function (entries) {
+    if (!entries[0].isIntersecting && entries[0].boundingClientRect.top > 0) setStep(0);
+  }, { threshold: 0 });
+  ioHow.observe(how);
+
+  var not = document.getElementById('limits');
+  var items = Array.prototype.slice.call(not.querySelectorAll('.not-list li'));
+  function setLimit(n) {
+    not.setAttribute('data-limit', n);
+    items.forEach(function (el) { el.classList.toggle('on', +el.dataset.i === n); });
+  }
+  var ioItems = new IntersectionObserver(function (entries) {
+    var best = null;
+    entries.forEach(function (en) { if (en.isIntersecting && (!best || en.intersectionRatio > best.intersectionRatio)) best = en; });
+    if (best) setLimit(+best.target.dataset.i);
+  }, { threshold: [0.6, 0.9], rootMargin: '-25% 0px -35% 0px' });
+  items.forEach(function (el) {
+    ioItems.observe(el);
+    el.addEventListener('mouseenter', function () { setLimit(+el.dataset.i); });
+  });
 })();
 </script>
 </body>
