@@ -563,7 +563,8 @@
   window.addEventListener('scroll', function () { target = read(); }, { passive: true });
   window.addEventListener('resize', function () { target = read(); refit(); });
   requestAnimationFrame(loop);
-
+})();
+(function () {
   document.getElementById('year').textContent = new Date().getFullYear();
   var fx = document.querySelector('.foot-fx');
   var fxSvg = document.getElementById('fx');
