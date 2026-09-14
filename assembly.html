@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X650 · Assembly explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400;62..125,500;62..125,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b1120; --panel:rgba(16,26,46,.86); --line:rgba(255,255,255,.14);
+    --ink:#eef2f8; --ink-2:rgba(238,242,248,.62); --ink-3:rgba(238,242,248,.38);
+    --cobalt:#3b7dff; --teal:#37c4b4; --amber:#f0b429; --violet:#a78bfa; --red:#ef5b5b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+    font-family:"Archivo",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  #app{position:fixed;inset:0}
+  canvas{display:block}
+
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+
+  /* ---- header ---- */
+  header{position:absolute;top:0;left:0;right:0;padding:18px 22px;display:flex;
+    justify-content:space-between;align-items:flex-start;pointer-events:none;z-index:5}
+  .brand{font-size:13px;letter-spacing:.14em;color:var(--ink-3)}
+  .brand b{color:var(--ink);font-weight:700;letter-spacing:-.01em;font-size:15px;display:block;margin-top:3px;letter-spacing:.02em}
+  .stat{text-align:right;font-size:11px;letter-spacing:.12em;color:var(--ink-3);line-height:1.9}
+  .stat b{color:var(--ink);font-size:17px;font-weight:700;margin-right:6px;letter-spacing:0}
+
+  /* ---- left control panel ---- */
+  .panel{position:absolute;background:var(--panel);border:1px solid var(--line);
+    border-radius:14px;backdrop-filter:blur(14px);z-index:6}
+  #controls{top:88px;left:22px;width:232px;padding:16px;max-height:calc(100% - 120px);overflow-y:auto}
+  .sec{font-size:10px;letter-spacing:.16em;color:var(--ink-3);margin:0 0 9px}
+  .sec:not(:first-child){margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+  .stages{display:grid;gap:6px}
+  .stage{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:9px;
+    border:1px solid transparent;background:rgba(255,255,255,.04);cursor:pointer;
+    font-size:13px;color:var(--ink-2);text-align:left;font-family:inherit;transition:.16s}
+  .stage:hover{background:rgba(255,255,255,.08);color:var(--ink)}
+  .stage.on{background:rgba(59,125,255,.17);border-color:var(--cobalt);color:var(--ink)}
+  .stage i{font-style:normal;font-size:10px;color:var(--ink-3)}
+  .stage.on i{color:var(--cobalt)}
+
+  label.row{display:flex;align-items:center;justify-content:space-between;
+    padding:6px 0;font-size:13px;color:var(--ink-2);cursor:pointer}
+  label.row:hover{color:var(--ink)}
+  .sw{width:34px;height:19px;border-radius:99px;background:rgba(255,255,255,.14);
+    position:relative;transition:.18s;flex:none}
+  .sw::after{content:"";position:absolute;top:2.5px;left:2.5px;width:14px;height:14px;
+    border-radius:50%;background:#fff;transition:.18s}
+  input[type=checkbox]{display:none}
+  input:checked + .sw{background:var(--cobalt)}
+  input:checked + .sw::after{transform:translateX(15px)}
+
+  .slider{width:100%;margin:4px 0 2px;accent-color:var(--cobalt)}
+  .sval{font-size:11px;color:var(--ink-3)}
+
+  .views{display:flex;gap:5px;flex-wrap:wrap}
+  .views button{flex:1;min-width:52px;padding:7px 4px;border-radius:8px;border:1px solid var(--line);
+    background:rgba(255,255,255,.04);color:var(--ink-2);font-size:11px;cursor:pointer;font-family:inherit;transition:.16s}
+  .views button:hover{background:rgba(255,255,255,.1);color:var(--ink)}
+
+  .key{display:grid;gap:7px;font-size:11.5px;color:var(--ink-2)}
+  .key div{display:flex;align-items:center;gap:8px}
+  .key span{width:16px;height:3px;border-radius:2px;flex:none}
+
+  /* ---- right detail panel ---- */
+  #detail{top:88px;right:22px;width:284px;padding:18px;display:none}
+  #detail.show{display:block}
+  #detail .tag{font-size:10px;letter-spacing:.14em;color:var(--cobalt);margin-bottom:7px}
+  #detail h2{margin:0 0 4px;font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:1.2}
+  #detail .part{font-size:11.5px;color:var(--ink-3);margin-bottom:13px}
+  #detail p{margin:0 0 13px;font-size:13.5px;line-height:1.6;color:var(--ink-2)}
+  #detail dl{margin:0;display:grid;gap:8px;font-size:12.5px;padding-top:13px;border-top:1px solid var(--line)}
+  #detail dl div{display:grid;grid-template-columns:78px 1fr;gap:10px}
+  #detail dt{color:var(--ink-3)}
+  #detail dd{margin:0;color:var(--ink-2)}
+  #detail .x{position:absolute;top:13px;right:14px;width:24px;height:24px;border-radius:6px;
+    border:1px solid var(--line);background:none;color:var(--ink-3);cursor:pointer;line-height:1;font-size:14px}
+  #detail .x:hover{color:var(--ink);background:rgba(255,255,255,.08)}
+
+  /* ---- 3D labels ---- */
+  #labels{position:absolute;inset:0;pointer-events:none;z-index:4;overflow:hidden}
+  .lbl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
+    font-size:10.5px;letter-spacing:.05em;color:var(--ink);background:rgba(11,17,32,.82);
+    border:1px solid var(--line);border-radius:5px;padding:3px 7px;pointer-events:auto;cursor:pointer;
+    transition:opacity .2s;font-family:"JetBrains Mono",monospace}
+  .lbl:hover{border-color:var(--cobalt)}
+  .lbl.dim{opacity:.3}
+
+  /* ---- footer ---- */
+  footer{position:absolute;bottom:0;left:0;right:0;padding:14px 22px;display:flex;
+    justify-content:space-between;align-items:center;pointer-events:none;z-index:5;
+    font-size:11px;color:var(--ink-3)}
+  footer .hint{letter-spacing:.04em}
+
+  #loading{position:absolute;inset:0;display:grid;place-items:center;z-index:9;
+    background:var(--bg);font-size:12px;letter-spacing:.16em;color:var(--ink-3);transition:opacity .5s}
+  #loading.gone{opacity:0;pointer-events:none}
+
+  @media(max-width:860px){
+    #controls{top:auto;bottom:14px;left:14px;right:14px;width:auto;max-height:40%}
+    #detail{top:76px;left:14px;right:14px;width:auto}
+    header{padding:14px}
+    .stat{display:none}
+    footer{display:none}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="labels"></div>
+
+<header>
+  <div class="brand mono">ASSEMBLY STUDY · 01<b>HOLYBRO X650 / PX4</b></div>
+  <div class="stat mono"><b>650</b>MM MOTOR TO MOTOR<br><b>4</b>MOTOR UNITS<br><b>~2.4</b>KG ALL UP</div>
+</header>
+
+<div class="panel" id="controls">
+  <p class="sec mono">STAGE</p>
+  <div class="stages">
+    <button class="stage on" data-stage="assembled"><i>01</i> Assembled</button>
+    <button class="stage" data-stage="inside"><i>02</i> Inside</button>
+    <button class="stage" data-stage="exploded"><i>03</i> Exploded</button>
+  </div>
+
+  <p class="sec mono">EXPLODE</p>
+  <input type="range" class="slider" id="explode" min="0" max="100" value="0">
+  <div class="sval mono" id="explodeVal">0%</div>
+
+  <p class="sec mono">DISPLAY</p>
+  <label class="row"><span>Labels</span><input type="checkbox" id="tLabels" checked><span class="sw"></span></label>
+  <label class="row"><span>Wiring</span><input type="checkbox" id="tWires" checked><span class="sw"></span></label>
+  <label class="row"><span>Propellers</span><input type="checkbox" id="tProps" checked><span class="sw"></span></label>
+  <label class="row"><span>Battery</span><input type="checkbox" id="tBatt" checked><span class="sw"></span></label>
+  <label class="row"><span>Auto rotate</span><input type="checkbox" id="tSpin"><span class="sw"></span></label>
+
+  <p class="sec mono">VIEW</p>
+  <div class="views">
+    <button data-view="persp">Perspective</button>
+    <button data-view="top">Top</button>
+    <button data-view="side">Side</button>
+    <button data-view="stack">Centre stack</button>
+  </div>
+
+  <p class="sec mono">CABLE KEY</p>
+  <div class="key">
+    <div><span style="background:#ef5b5b"></span>Battery power</div>
+    <div><span style="background:#37c4b4"></span>CAN / UART</div>
+    <div><span style="background:#f0b429"></span>ESC signal</div>
+    <div><span style="background:#a78bfa"></span>USB / sensor</div>
+  </div>
+</div>
+
+<div class="panel" id="detail">
+  <button class="x" id="closeDetail">×</button>
+  <div class="tag mono" id="dTag">COMPONENT</div>
+  <h2 id="dName"></h2>
+  <div class="part mono" id="dPart"></div>
+  <p id="dDesc"></p>
+  <dl id="dMeta"></dl>
+</div>
+
+<footer>
+  <div class="hint mono">DRAG TO ORBIT · SCROLL TO ZOOM · RIGHT-DRAG TO PAN · CLICK A PART</div>
+  <div class="mono">v0.1 · GEOMETRY APPROXIMATE</div>
+</footer>
+
+<div id="loading" class="mono">BUILDING ASSEMBLY…</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   X650 assembly explorer
+   Units are millimetres. Y is up. Forward (nose) is +X.
+   Every part is procedural — no CAD import.
+   ============================================================ */
+
+var PARTS = [];            // registry of interactive parts
+var scene, camera, renderer, root;
+var raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
+var labelLayer = document.getElementById('labels');
+
+/* ---------- renderer ---------- */
+scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b1120);
+scene.fog = new THREE.Fog(0x0b1120, 1200, 2600);
+
+camera = new THREE.PerspectiveCamera(38, window.innerWidth/window.innerHeight, 1, 6000);
+
+renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.getElementById('app').appendChild(renderer.domElement);
+
+root = new THREE.Group();
+scene.add(root);
+
+/* ---------- lighting ---------- */
+scene.add(new THREE.HemisphereLight(0x9ec3ff, 0x0a1020, 0.75));
+var key = new THREE.DirectionalLight(0xffffff, 0.85);
+key.position.set(420, 700, 380); scene.add(key);
+var fill = new THREE.DirectionalLight(0x6fa8ff, 0.4);
+fill.position.set(-500, 220, -400); scene.add(fill);
+var rim = new THREE.DirectionalLight(0x37c4b4, 0.3);
+rim.position.set(0, -300, 600); scene.add(rim);
+
+/* ---------- ground grid ---------- */
+var grid = new THREE.GridHelper(2400, 24, 0x1d2b48, 0x151f36);
+grid.position.y = -300;
+scene.add(grid);
+
+/* ---------- materials ---------- */
+function mat(c, opts){
+  opts = opts || {};
+  return new THREE.MeshStandardMaterial({
+    color:c,
+    metalness: opts.m !== undefined ? opts.m : 0.25,
+    roughness: opts.r !== undefined ? opts.r : 0.62,
+    transparent: !!opts.t, opacity: opts.o !== undefined ? opts.o : 1
+  });
+}
+var M = {
+  carbon : mat(0x1c2534, {m:.35, r:.5}),
+  carbon2: mat(0x232e41, {m:.35, r:.55}),
+  tube   : mat(0x18202e, {m:.4,  r:.45}),
+  motor  : mat(0x2a3345, {m:.75, r:.35}),
+  bell   : mat(0x11161f, {m:.8,  r:.3}),
+  copper : mat(0xb87333, {m:.9,  r:.35}),
+  prop   : mat(0x121822, {m:.3,  r:.55, t:true, o:.78}),
+  pcb    : mat(0x0f6b4f, {m:.15, r:.7}),
+  pcbDark: mat(0x11182a, {m:.2,  r:.65}),
+  alu    : mat(0x3c4757, {m:.85, r:.3}),
+  plastic: mat(0x1a2231, {m:.1,  r:.75}),
+  white  : mat(0xd8dee8, {m:.3,  r:.4}),
+  batt   : mat(0x8e9aab, {m:.55, r:.4}),
+  lens   : mat(0x0a0f18, {m:.2,  r:.15}),
+  accent : mat(0x3b7dff, {m:.4,  r:.4}),
+  gold   : mat(0xc9a227, {m:.9,  r:.3})
+};
+
+/* ---------- helpers ---------- */
+function box(w,h,d,material){ return new THREE.Mesh(new THREE.BoxGeometry(w,h,d), material); }
+function cyl(rt,rb,h,material,seg){ return new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg||24), material); }
+
+/**
+ * Register an interactive part.
+ * dir = explode direction (unit-ish vector), dist = explode travel in mm
+ */
+function part(cfg){
+  var g = new THREE.Group();
+  g.position.set(cfg.pos[0], cfg.pos[1], cfg.pos[2]);
+  g.userData = {
+    id: cfg.id, name: cfg.name, partNo: cfg.partNo || '',
+    tag: cfg.tag || 'COMPONENT', desc: cfg.desc || '', meta: cfg.meta || [],
+    home: g.position.clone(),
+    dir: new THREE.Vector3(cfg.dir[0], cfg.dir[1], cfg.dir[2]),
+    dist: cfg.dist || 0,
+    labelAt: cfg.labelAt || [0,0,0],
+    group: cfg.group || 'core',
+    ghost: !!cfg.ghost
+  };
+  root.add(g);
+  PARTS.push(g);
+  return g;
+}
+
+/* ============================================================
+   FRAME
+   ============================================================ */
+
+/* --- bottom plate --- */
+var pBottom = part({
+  id:'plate-bottom', name:'Lower frame plate', partNo:'X650 carbon plate',
+  tag:'STRUCTURE', pos:[0,-2,0], dir:[0,-1,0], dist:110, labelAt:[0,0,-105],
+  desc:'The load-bearing carbon plate. Arms clamp between this and the upper plate, and everything below — battery tray, power distribution, cameras — hangs off it.',
+  meta:[['Material','3 mm carbon'],['Size','190 × 190 mm']]
+});
+pBottom.add(box(190,3,190, M.carbon));
+
+/* --- standoffs --- */
+var pStand = part({
+  id:'standoffs', name:'Frame standoffs', partNo:'M3 aluminium',
+  tag:'STRUCTURE', pos:[0,13,0], dir:[0,1,0], dist:0, labelAt:[0,0,0],
+  desc:'Four spacers setting the gap between the plates. The wiring bundle, ESCs and flight-controller loom all live in this cavity.',
+  meta:[['Height','30 mm']]
+});
+[[70,70],[70,-70],[-70,70],[-70,-70]].forEach(function(p){
+  var s = cyl(3.2,3.2,30,M.alu,12); s.position.set(p[0],0,p[1]); pStand.add(s);
+});
+
+/* --- top plate --- */
+var pTop = part({
+  id:'plate-top', name:'Upper frame plate', partNo:'X650 carbon plate',
+  tag:'STRUCTURE', pos:[0,29.5,0], dir:[0,1,0], dist:150, labelAt:[0,4,-105],
+  desc:'Carries the compute stack. The Jetson carrier board, telemetry radio and antennas all mount to this face.',
+  meta:[['Material','3 mm carbon'],['Size','190 × 190 mm']]
+});
+pTop.add(box(190,3,190, M.carbon));
+
+/* --- arms, motors, props --- */
+var ARM_ANGLES = [45, 135, 225, 315];
+var ARM_NAMES  = ['Front right','Rear right','Rear left','Front left'];
+var SPIN       = ['CCW','CW','CCW','CW'];
+var MOTOR_R    = 325;   // 650 mm motor-to-motor
+var propParts  = [];
+
+ARM_ANGLES.forEach(function(deg, i){
+  var a  = deg * Math.PI/180;
+  var ux = Math.cos(a), uz = Math.sin(a);
+  var inner = 92, outer = MOTOR_R;
+  var mid = (inner + outer)/2;
+
+  /* arm tube */
+  var pArm = part({
+    id:'arm-'+i, name:'Arm '+(i+1)+' · '+ARM_NAMES[i], partNo:'25 mm carbon tube',
+    tag:'STRUCTURE', pos:[ux*mid, 13, uz*mid], dir:[ux,0,uz], dist:200,
+    labelAt:[0,16,0],
+    desc:'Folding carbon tube carrying the motor and its ESC wiring. The collar at the root is the fold lock — it must seat positively or the motors will not sit coplanar.',
+    meta:[['Diameter','25 mm'],['Reach','325 mm from centre'],['Position',ARM_NAMES[i]]]
+  });
+  var tube = cyl(12.5,12.5, outer-inner, M.tube, 20);
+  tube.rotation.z = Math.PI/2;
+  tube.rotation.y = -a;
+  pArm.add(tube);
+
+  /* motor */
+  var pMot = part({
+    id:'motor-'+i, name:'Motor '+(i+1), partNo:'T-Motor · brushless outrunner',
+    tag:'PROPULSION', pos:[ux*outer, 32, uz*outer], dir:[ux,0.25,uz], dist:210,
+    labelAt:[0,34,0],
+    desc:'Brushless outrunner driven by its ESC. Three wires — swap any two to reverse direction. Motor ' + (i+1) + ' turns ' + SPIN[i] + '; getting this wrong is the most common cause of a first-flight crash.',
+    meta:[['Rotation',SPIN[i]],['Wires','3-phase'],['Mount','M3 × 4']]
+  });
+  var can = cyl(22,22,26,M.motor,28); can.position.y = 0; pMot.add(can);
+  var bell= cyl(23,23,4,M.bell,28);   bell.position.y = 14; pMot.add(bell);
+  var wind= cyl(18,18,14,M.copper,28);wind.position.y = -2; pMot.add(wind);
+  var shaft=cyl(3,3,26,M.alu,12);     shaft.position.y = 20; pMot.add(shaft);
+
+  /* propeller */
+  var pProp = part({
+    id:'prop-'+i, name:'Propeller '+(i+1), partNo:'Carbon, folding',
+    tag:'PROPULSION', pos:[ux*outer, 52, uz*outer], dir:[0,1,0], dist:160,
+    labelAt:[0,14,0], group:'props',
+    desc:'Carbon blade pair. Props come in two handedness types that look nearly identical — check the hub marking before fitting. Always the first thing off the aircraft before any bench work.',
+    meta:[['Rotation',SPIN[i]],['Diameter','~394 mm'],['Retention','Collet adapter']]
+  });
+  var hub = cyl(11,11,8,M.alu,16); pProp.add(hub);
+  for(var b=0;b<2;b++){
+    var blade = box(190, 3, 24, M.prop);
+    blade.position.set(Math.cos(b*Math.PI)*98, 2, Math.sin(b*Math.PI)*98);
+    blade.rotation.y = b*Math.PI;
+    blade.rotation.x = (b===0?1:-1) * 0.14;
+    pProp.add(blade);
+  }
+  pProp.rotation.y = -a + 0.5;
+  propParts.push(pProp);
+
+  /* ESC inside the arm root */
+  part({
+    id:'esc-'+i, name:'ESC '+(i+1), partNo:'Electronic speed controller',
+    tag:'PROPULSION', pos:[ux*105, 13, uz*105], dir:[ux,0,uz], dist:150,
+    labelAt:[0,14,0], group:'inside',
+    desc:'Takes a throttle command from the flight controller and drives the motor\'s three phases. One per motor, tucked into the arm root inside the frame cavity.',
+    meta:[['Input','Battery voltage'],['Signal','From flight controller'],['Output','3-phase to motor']]
+  }).add(box(42,7,20, M.pcbDark));
+});
+
+/* --- landing gear --- */
+[[1,'Right'],[-1,'Left']].forEach(function(s, i){
+  var sign = s[0];
+  var pLeg = part({
+    id:'gear-'+i, name:'Landing gear · '+s[1], partNo:'Carbon skid',
+    tag:'STRUCTURE', pos:[0,-90,sign*95], dir:[0,-1,sign*0.35], dist:200,
+    labelAt:[0,-70,0],
+    desc:'Carbon leg and foam-wrapped skid. Sets ground clearance for everything slung underneath — the battery, the depth camera and the downward optical flow sensor all sit inside this envelope.',
+    meta:[['Clearance','~180 mm'],['Skid','Foam wrapped']]
+  });
+  var v1 = cyl(7,7,175,M.tube,14); v1.position.set(70,0,0);  v1.rotation.x = sign*0.16; pLeg.add(v1);
+  var v2 = cyl(7,7,175,M.tube,14); v2.position.set(-70,0,0); v2.rotation.x = sign*0.16; pLeg.add(v2);
+  var skid = cyl(8,8,230,M.plastic,14);
+  skid.rotation.z = Math.PI/2; skid.position.set(0,-88, sign*14);
+  pLeg.add(skid);
+});
+
+/* ============================================================
+   COMPUTE STACK  (above the top plate)
+   ============================================================ */
+
+var pCarrier = part({
+  id:'carrier', name:'Carrier board', partNo:'PAB-BASE-OrinNX-R2.04',
+  tag:'COMPUTE', pos:[0,34,0], dir:[0,1,0], dist:230, labelAt:[0,4,86],
+  desc:'The board everything plugs into. It carries the Jetson module and integrates the flight controller, so there is no separate Pixhawk box floating in the loom. The bank of white JST-GH sockets along one edge is the flight controller\'s I/O.',
+  meta:[['Carries','Jetson Orin NX'],['I/O','JST-GH, USB 3.0, Ethernet'],['Power','From PM08']]
+});
+pCarrier.add(box(152,3,112, M.pcb));
+var conn = new THREE.Group();
+for(var c=0;c<7;c++){
+  var j = box(4,4.5,9, M.white);
+  j.position.set(-64, 3.5, -44 + c*14.5);
+  conn.add(j);
+}
+pCarrier.add(conn);
+var usb1 = box(15,7,6, M.accent); usb1.position.set(-8,5,-50); pCarrier.add(usb1);
+var usb2 = box(15,7,6, M.accent); usb2.position.set(-8,5,-42); pCarrier.add(usb2);
+var eth  = box(16,11,14,M.alu);   eth.position.set(-30,7,38);  pCarrier.add(eth);
+
+var pJetson = part({
+  id:'jetson', name:'NVIDIA Jetson Orin NX', partNo:'Companion computer',
+  tag:'COMPUTE', pos:[34,46,0], dir:[0.3,1,0], dist:250, labelAt:[0,22,0],
+  desc:'The onboard Linux computer — the part that makes autonomy possible. It talks to the flight controller over MAVLink and to the depth camera over USB 3. Nothing it does is required for a first manual hover; treat it as a separate project from getting the airframe airworthy.',
+  meta:[['Role','Autonomy / vision'],['Link','MAVLink to FC'],['Cooling','Active fan']]
+});
+pJetson.add(box(70,10,70, M.pcbDark));
+var hs = box(62,16,62, M.alu); hs.position.y = 13; pJetson.add(hs);
+var fan = cyl(21,21,7,M.plastic,26); fan.position.y = 23; pJetson.add(fan);
+for(var f=0;f<7;f++){
+  var bl = box(17,1.6,5, M.alu);
+  bl.position.set(Math.cos(f/7*Math.PI*2)*9, 24, Math.sin(f/7*Math.PI*2)*9);
+  bl.rotation.y = f/7*Math.PI*2;
+  pJetson.add(bl);
+}
+
+var pTelem = part({
+  id:'telemetry', name:'Telemetry radio', partNo:'915 MHz · 100 mW',
+  tag:'COMMS', pos:[-46,44,-52], dir:[-0.4,1,-0.5], dist:230, labelAt:[0,16,0],
+  desc:'The data link back to your laptop running QGroundControl. This is not the same as the RC receiver — the radio talks telemetry and commands to the ground station, the receiver listens to your handheld transmitter.',
+  meta:[['Band','915 MHz'],['Power','100 mW'],['Talks to','Ground station']]
+});
+pTelem.add(box(46,15,30, M.plastic));
+
+var pAnt = part({
+  id:'antennas', name:'SMA antennas', partNo:'Screw-on whip',
+  tag:'COMMS', pos:[8,80,-34], dir:[0,1,-0.3], dist:230, labelAt:[0,44,0],
+  desc:'Screw onto gold SMA studs on the board. Easy to confuse with the GPS, which sits on its own mast and connects with a thin JST-GH cable rather than a threaded connector.',
+  meta:[['Connector','SMA'],['Count','2']]
+});
+var a1 = cyl(3.5,3.5,92,M.plastic,12); a1.position.set(0,46,0);   pAnt.add(a1);
+var a2 = cyl(3.5,3.5,92,M.plastic,12); a2.position.set(-30,46,8); pAnt.add(a2);
+
+/* --- GPS on its mast --- */
+var pGps = part({
+  id:'gps', name:'GPS / compass module', partNo:'DroneCAN M9N',
+  tag:'NAVIGATION', pos:[68,96,-74], dir:[0.5,0.9,-0.5], dist:250, labelAt:[0,26,0],
+  desc:'u-blox M9N receiver with the compass inside it. Mounted up on a mast deliberately: the magnetometer needs distance from the power wiring, or the compass reads the aircraft\'s own current instead of the earth\'s field. Connects over the CAN bus.',
+  meta:[['Receiver','u-blox M9N'],['Bus','DroneCAN'],['Contains','GNSS + compass'],['Indoors','No fix — use optical flow']]
+});
+var mast = cyl(4,4,112,M.tube,12); mast.position.y = -28; pGps.add(mast);
+var dome = cyl(28,28,7,M.plastic,28); pGps.add(dome);
+var domeTop = new THREE.Mesh(new THREE.SphereGeometry(28,28,14,0,Math.PI*2,0,Math.PI/2.6), M.plastic);
+domeTop.position.y = 3; pGps.add(domeTop);
+var arrow = box(10,1,16, M.white); arrow.position.set(0,11,-4); pGps.add(arrow);
+
+/* ============================================================
+   POWER + SENSORS  (below the bottom plate)
+   ============================================================ */
+
+var pPdb = part({
+  id:'pdb', name:'Power distribution board', partNo:'PDB01-V1.2',
+  tag:'POWER', pos:[0,-14,0], dir:[0,-1,0], dist:200, labelAt:[0,-12,74],
+  desc:'Takes one battery input on the large XT60 and splits it to six outputs for the ESCs and accessories. Everything downstream of the battery gets its power through this board.',
+  meta:[['Inputs','1 × XT60'],['Outputs','6 × XT60'],['Feeds','4 ESCs + accessories']]
+});
+pPdb.add(box(96,3,76, M.pcbDark));
+[[-38,-26],[-38,26],[38,-26],[38,26],[0,-32],[0,32]].forEach(function(p){
+  var xt = box(11,9,8, M.gold); xt.position.set(p[0],-5,p[1]); pPdb.add(xt);
+});
+
+var pPm = part({
+  id:'pm08', name:'Power module', partNo:'Holybro PM08 · DroneCAN',
+  tag:'POWER', pos:[-56,-26,40], dir:[-0.6,-0.6,0.5], dist:200, labelAt:[0,-16,0],
+  desc:'Sits in the main battery path and measures voltage and current, reporting both to the flight controller over CAN. This is how the aircraft knows its battery state — without it there is no low-battery failsafe.',
+  meta:[['Bus','DroneCAN'],['Measures','Voltage + current'],['Enables','Battery failsafe']]
+});
+pPm.add(box(48,17,32, M.plastic));
+
+var pBatt = part({
+  id:'battery', name:'Flight battery', partNo:'LiPo pack · XT90',
+  tag:'POWER', pos:[0,-52,0], dir:[0,-1,0], dist:250, labelAt:[0,-30,0], group:'battery',
+  desc:'Lithium polymer pack strapped into the tray. Terminates in an XT90, not the smaller XT60 used elsewhere on the aircraft. Keep it disconnected and taped for every bench session — nothing in commissioning needs it, and the flight controller runs happily off USB.',
+  meta:[['Connector','XT90'],['Balance lead','Charge only'],['Bench work','Always disconnected'],['Storage','Fireproof bag']]
+});
+pBatt.add(box(150,46,52, M.batt));
+var strap1 = box(154,48,12, M.plastic); strap1.position.z = -16; pBatt.add(strap1);
+var strap2 = box(154,48,12, M.plastic); strap2.position.z = 16;  pBatt.add(strap2);
+
+var pRs = part({
+  id:'realsense', name:'Depth camera', partNo:'Intel RealSense',
+  tag:'SENSING', pos:[74,-30,0], dir:[1,-0.3,0], dist:220, labelAt:[0,-18,0],
+  desc:'Stereo depth camera facing forward. Sees distance, not just colour. Connects to the Jetson over USB 3 — it must be a blue USB 3 port, or the depth stream fails in confusing ways. Route the cable short and secured; a loose USB lead near a propeller is a bad day.',
+  meta:[['Type','Stereo depth'],['Host','Jetson, USB 3'],['Faces','Forward']]
+});
+pRs.add(box(26,15,104, M.white));
+for(var l=0;l<4;l++){
+  var lens = cyl(6,6,3,M.lens,18);
+  lens.rotation.z = Math.PI/2;
+  lens.position.set(13,1,-36 + l*24);
+  pRs.add(lens);
+}
+
+var pFlow = part({
+  id:'flow', name:'Optical flow sensor', partNo:'ATK-PMW3901',
+  tag:'SENSING', pos:[-30,-12,0], dir:[-0.3,-1,0], dist:190, labelAt:[0,-16,0],
+  desc:'Downward-facing sensor that measures how the ground moves beneath the aircraft. This is what gives position hold indoors where GPS cannot reach. It needs a textured floor to track against, and really wants a rangefinder alongside it — flow alone cannot tell "fast and high" from "slow and low".',
+  meta:[['Sensor','PMW3901'],['Faces','Down'],['Enables','Indoor position hold'],['Needs','Textured floor + rangefinder']]
+});
+pFlow.add(box(24,4,20, M.pcbDark));
+var flens = cyl(4,4,4,M.lens,16); flens.position.y = -3; pFlow.add(flens);
+
+/* ============================================================
+   WIRING
+   ============================================================ */
+var wires = new THREE.Group();
+root.add(wires);
+
+function wire(points, colour, radius){
+  var curve = new THREE.CatmullRomCurve3(points.map(function(p){
+    return new THREE.Vector3(p[0],p[1],p[2]);
+  }));
+  var geo = new THREE.TubeGeometry(curve, 40, radius || 2.2, 8, false);
+  var m = new THREE.MeshStandardMaterial({color:colour, metalness:.2, roughness:.6,
+    emissive:colour, emissiveIntensity:.18});
+  wires.add(new THREE.Mesh(geo, m));
+}
+
+/* battery → power module → PDB */
+wire([[0,-34,20],[-30,-32,34],[-56,-30,40]], 0xef5b5b, 2.6);
+wire([[0,-34,26],[-30,-36,38],[-56,-34,42]], 0x2b3242, 2.6);
+wire([[-56,-22,38],[-30,-18,22],[-4,-15,10]], 0xef5b5b, 2.6);
+wire([[-56,-26,34],[-30,-22,18],[-4,-18,4]], 0x2b3242, 2.6);
+
+/* PDB → each ESC along the arms */
+ARM_ANGLES.forEach(function(deg){
+  var a = deg*Math.PI/180, ux = Math.cos(a), uz = Math.sin(a);
+  wire([[ux*18,-11,uz*18],[ux*60,-2,uz*60],[ux*104,11,uz*104]], 0xef5b5b, 1.9);
+  wire([[ux*14,-11,uz*14],[ux*56,-4,uz*56],[ux*100,9,uz*100]], 0x2b3242, 1.9);
+  /* ESC signal up to the flight controller */
+  wire([[ux*100,14,uz*100],[ux*50,17,uz*50],[-56,34,-10]], 0xf0b429, 1.3);
+});
+
+/* GPS + power module on the CAN bus */
+wire([[68,60,-74],[50,44,-50],[-50,37,-30]], 0x37c4b4, 1.5);
+wire([[-56,-18,44],[-40,6,34],[-56,35,-4]], 0x37c4b4, 1.5);
+
+/* telemetry radio to carrier */
+wire([[-46,38,-52],[-50,36,-38],[-58,35,-22]], 0x37c4b4, 1.4);
+
+/* RealSense USB up to the Jetson */
+wire([[74,-24,0],[70,4,20],[46,40,26],[36,46,10]], 0xa78bfa, 1.7);
+
+/* optical flow to the carrier board */
+wire([[-30,-10,0],[-34,4,-6],[-56,33,-14]], 0xa78bfa, 1.3);
+
+/* ============================================================
+   LABELS
+   ============================================================ */
+var LABELLED = ['motor-0','prop-0','arm-0','plate-top','plate-bottom','carrier','jetson',
+  'telemetry','antennas','gps','pdb','pm08','battery','realsense','flow','gear-0'];
+var labelEls = {};
+PARTS.forEach(function(p){
+  if(LABELLED.indexOf(p.userData.id) === -1) return;
+  var el = document.createElement('div');
+  el.className = 'lbl';
+  el.textContent = p.userData.name;
+  el.addEventListener('click', function(){ select(p); });
+  labelLayer.appendChild(el);
+  labelEls[p.userData.id] = el;
+});
+
+/* ============================================================
+   ORBIT CONTROLS (hand-rolled — no external dependency)
+   ============================================================ */
+var target = new THREE.Vector3(0,0,0);
+var sph = { r: 1150, theta: 0.85, phi: 1.12 };
+var goal = { r: 1150, theta: 0.85, phi: 1.12, t: target.clone() };
+var dragging = false, panning = false, px = 0, py = 0, spin = false;
+
+function applyCam(){
+  sph.r     += (goal.r - sph.r) * 0.12;
+  sph.theta += (goal.theta - sph.theta) * 0.12;
+  sph.phi   += (goal.phi - sph.phi) * 0.12;
+  target.lerp(goal.t, 0.12);
+  var sp = Math.max(0.08, Math.min(Math.PI - 0.08, sph.phi));
+  camera.position.set(
+    target.x + sph.r * Math.sin(sp) * Math.cos(sph.theta),
+    target.y + sph.r * Math.cos(sp),
+    target.z + sph.r * Math.sin(sp) * Math.sin(sph.theta)
+  );
+  camera.lookAt(target);
+}
+
+var cv = renderer.domElement;
+cv.addEventListener('pointerdown', function(e){
+  dragging = true; panning = (e.button === 2);
+  px = e.clientX; py = e.clientY; cv.setPointerCapture(e.pointerId);
+});
+cv.addEventListener('pointerup', function(e){
+  dragging = false; panning = false;
+  try{ cv.releasePointerCapture(e.pointerId); }catch(err){}
+});
+cv.addEventListener('pointermove', function(e){
+  if(!dragging) return;
+  var dx = e.clientX - px, dy = e.clientY - py;
+  px = e.clientX; py = e.clientY;
+  if(panning){
+    var right = new THREE.Vector3().setFromMatrixColumn(camera.matrix,0);
+    var up    = new THREE.Vector3().setFromMatrixColumn(camera.matrix,1);
+    goal.t.addScaledVector(right, -dx * sph.r * 0.0011);
+    goal.t.addScaledVector(up,     dy * sph.r * 0.0011);
+  } else {
+    goal.theta -= dx * 0.006;
+    goal.phi   -= dy * 0.006;
+    goal.phi = Math.max(0.1, Math.min(Math.PI-0.1, goal.phi));
+  }
+});
+cv.addEventListener('wheel', function(e){
+  e.preventDefault();
+  goal.r = Math.max(320, Math.min(2600, goal.r * (1 + Math.sign(e.deltaY)*0.11)));
+}, {passive:false});
+cv.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+
+/* ============================================================
+   INTERACTION
+   ============================================================ */
+var selected = null;
+var detail  = document.getElementById('detail');
+
+function highlight(group, on){
+  group.traverse(function(o){
+    if(!o.isMesh) return;
+    if(on){
+      if(!o.userData._m) o.userData._m = o.material;
+      o.material = new THREE.MeshStandardMaterial({
+        color:0x3b7dff, emissive:0x2c5fd0, emissiveIntensity:.5,
+        metalness:.4, roughness:.4
+      });
+    } else if(o.userData._m){
+      o.material = o.userData._m;
+    }
+  });
+}
+
+function select(p){
+  if(selected) highlight(selected, false);
+  selected = p;
+  highlight(p, true);
+  var d = p.userData;
+  document.getElementById('dTag').textContent  = d.tag;
+  document.getElementById('dName').textContent = d.name;
+  document.getElementById('dPart').textContent = d.partNo;
+  document.getElementById('dDesc').textContent = d.desc;
+  var dl = document.getElementById('dMeta');
+  dl.innerHTML = '';
+  d.meta.forEach(function(m){
+    var row = document.createElement('div');
+    row.innerHTML = '<dt>'+m[0]+'</dt><dd>'+m[1]+'</dd>';
+    dl.appendChild(row);
+  });
+  detail.classList.add('show');
+}
+
+function deselect(){
+  if(selected) highlight(selected, false);
+  selected = null;
+  detail.classList.remove('show');
+}
+document.getElementById('closeDetail').addEventListener('click', deselect);
+
+cv.addEventListener('click', function(e){
+  if(Math.abs(e.clientX - px) > 4 || Math.abs(e.clientY - py) > 4) return;
+  pointer.x =  (e.clientX / window.innerWidth)  * 2 - 1;
+  pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+  var hits = raycaster.intersectObjects(root.children, true);
+  for(var i=0;i<hits.length;i++){
+    var o = hits[i].object;
+    while(o && PARTS.indexOf(o) === -1) o = o.parent;
+    if(o){ select(o); return; }
+  }
+  deselect();
+});
+
+/* ============================================================
+   STAGES / UI
+   ============================================================ */
+var explodeAmt = 0, targetExplode = 0;
+var slider = document.getElementById('explode');
+var sval   = document.getElementById('explodeVal');
+
+function setExplode(v){
+  targetExplode = v/100;
+  slider.value = v;
+  sval.textContent = Math.round(v) + '%';
+}
+
+function setStage(name){
+  document.querySelectorAll('.stage').forEach(function(b){
+    b.classList.toggle('on', b.dataset.stage === name);
+  });
+  if(name === 'assembled'){
+    setExplode(0);
+    setGhost(false);
+    setVis('props', document.getElementById('tProps').checked);
+  } else if(name === 'inside'){
+    setExplode(0);
+    setGhost(true);
+    document.getElementById('tProps').checked = false;
+    setVis('props', false);
+  } else {
+    setExplode(100);
+    setGhost(false);
+    setVis('props', document.getElementById('tProps').checked);
+  }
+}
+
+function setGhost(on){
+  ['plate-top','jetson'].forEach(function(id){
+    PARTS.forEach(function(p){
+      if(p.userData.id !== id) return;
+      p.traverse(function(o){
+        if(!o.isMesh) return;
+        o.material.transparent = on;
+        o.material.opacity = on ? 0.18 : 1;
+        o.material.needsUpdate = true;
+      });
+    });
+  });
+}
+
+function setVis(group, on){
+  PARTS.forEach(function(p){ if(p.userData.group === group) p.visible = on; });
+}
+
+document.querySelectorAll('.stage').forEach(function(b){
+  b.addEventListener('click', function(){ setStage(b.dataset.stage); });
+});
+slider.addEventListener('input', function(){ setExplode(+slider.value); });
+
+document.getElementById('tProps').addEventListener('change', function(e){ setVis('props', e.target.checked); });
+document.getElementById('tBatt').addEventListener('change',  function(e){ setVis('battery', e.target.checked); });
+document.getElementById('tWires').addEventListener('change', function(e){ wires.visible = e.target.checked; });
+document.getElementById('tSpin').addEventListener('change',  function(e){ spin = e.target.checked; });
+document.getElementById('tLabels').addEventListener('change', function(e){
+  labelLayer.style.display = e.target.checked ? 'block' : 'none';
+});
+
+var VIEWS = {
+  persp:{r:1150, theta:0.85, phi:1.12, t:[0,0,0]},
+  top:  {r:1000, theta:-Math.PI/2, phi:0.14, t:[0,0,0]},
+  side: {r:1050, theta:0, phi:Math.PI/2, t:[0,-10,0]},
+  stack:{r:420,  theta:0.7,  phi:1.0,  t:[0,30,0]}
+};
+document.querySelectorAll('.views button').forEach(function(b){
+  b.addEventListener('click', function(){
+    var v = VIEWS[b.dataset.view];
+    goal.r = v.r; goal.theta = v.theta; goal.phi = v.phi;
+    goal.t.set(v.t[0], v.t[1], v.t[2]);
+  });
+});
+
+/* ============================================================
+   LOOP
+   ============================================================ */
+var tmp = new THREE.Vector3();
+function tick(){
+  requestAnimationFrame(tick);
+
+  explodeAmt += (targetExplode - explodeAmt) * 0.1;
+  PARTS.forEach(function(p){
+    var d = p.userData;
+    p.position.copy(d.home).addScaledVector(d.dir, d.dist * explodeAmt);
+  });
+  wires.visible = document.getElementById('tWires').checked && explodeAmt < 0.25;
+
+  if(spin) goal.theta += 0.0022;
+  applyCam();
+
+  /* project labels */
+  if(document.getElementById('tLabels').checked){
+    PARTS.forEach(function(p){
+      var el = labelEls[p.userData.id];
+      if(!el) return;
+      if(!p.visible){ el.style.display = 'none'; return; }
+      el.style.display = 'block';
+      tmp.set(p.userData.labelAt[0], p.userData.labelAt[1], p.userData.labelAt[2]);
+      p.localToWorld(tmp);
+      var v = tmp.clone().project(camera);
+      if(v.z > 1){ el.style.display = 'none'; return; }
+      el.style.left = ((v.x * 0.5 + 0.5) * window.innerWidth) + 'px';
+      el.style.top  = ((-v.y * 0.5 + 0.5) * window.innerHeight) + 'px';
+      el.classList.toggle('dim', selected && selected !== p);
+    });
+  }
+
+  renderer.render(scene, camera);
+}
+
+window.addEventListener('resize', function(){
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+tick();
+setTimeout(function(){ document.getElementById('loading').classList.add('gone'); }, 500);
+
+})();
+</script>
+</body>
+</html>
