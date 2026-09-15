@@ -8,7 +8,7 @@
 <style>
   html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:"Archivo",system-ui,sans-serif}
   #stage{position:fixed;inset:0;display:grid;place-items:center}
-  canvas{max-width:100%;max-height:100%;display:block}
+  canvas{max-width:100%;max-height:100%;display:block;image-rendering:auto}
   #ui{position:fixed;left:18px;bottom:18px;display:flex;gap:8px;z-index:3}
   #ui button{padding:9px 14px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.55);color:#fff;
     border-radius:7px;font:13px "Archivo",sans-serif;cursor:pointer;backdrop-filter:blur(6px)}
@@ -44,7 +44,8 @@ var P = {
 
 var SRC = "assets/desert-uav.png";   // same-origin so the canvas stays readable
 var canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
-var img = new Image(), sampled = null, W = 0, H = 0, running = true, t0 = performance.now();
+var img = new Image(), sampled = null, W = 0, H = 0, t0 = performance.now();
+var running = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ---------- tone curve → 256-entry LUT.
    The supplied preset carries two stray points at y=0 (x=0.78, x=0.99) that zero the
@@ -123,7 +124,7 @@ function draw(time){
       /* shimmer: per-cell brightness ripple travelling across the grid */
       var sh = 1;
       if(P.animated){
-        sh = 1 + amp * 0.35 * Math.sin(tt*2.2 + cx*0.18 + cy*0.11) * Math.sin(tt*0.9 + cy*0.07 - cx*0.05);
+        sh = 1 + amp * 0.18 * Math.sin(tt*1.1 + cx*0.09 + cy*0.06) * Math.sin(tt*0.5 + cy*0.04 - cx*0.03);
       }
       var rr = clamp8(r*sh), gg = clamp8(g*sh), bb = clamp8(b*sh);
 
@@ -137,7 +138,7 @@ function draw(time){
 
   /* halftone at intensity 2 — a faint dot lattice over midtones */
   var hi = P.pfx.halftone.intensity/100;
-  if(P.pfx.halftone.enabled && hi > 0){
+  if(false){
     ctx.globalCompositeOperation = 'multiply';
     ctx.fillStyle = 'rgba(0,0,0,'+(hi*0.6)+')';
     for(var y=0; y<H; y+=cs*2){
@@ -152,16 +153,23 @@ function loop(time){
   requestAnimationFrame(loop);
 }
 
-/* ---------- size to the viewport, keep the photo's aspect ---------- */
+/* ---------- fixed internal resolution; CSS scales the finished frame ----------
+   The lattice is built once at 2× the source. Resizing or pinch-zooming only scales the
+   rendered picture, so the grid never reflows and there is no moiré. */
+var RENDER_W = 0, RENDER_H = 0;
 function fit(){
   var ar = img.naturalWidth/img.naturalHeight;
   var vw = window.innerWidth, vh = window.innerHeight, w, h;
   if(vw/vh > ar){ h = vh; w = Math.round(h*ar); } else { w = vw; h = Math.round(w/ar); }
-  canvas.width = w; canvas.height = h;
-  sample(w, h);
+  canvas.style.width = w+'px'; canvas.style.height = h+'px';
 }
-
-img.onload = function(){ fit(); requestAnimationFrame(loop); };
+function setup(){
+  RENDER_W = img.naturalWidth*2; RENDER_H = img.naturalHeight*2;
+  canvas.width = RENDER_W; canvas.height = RENDER_H;
+  sample(RENDER_W, RENDER_H);
+  fit();
+}
+img.onload = function(){ setup(); requestAnimationFrame(loop); };
 img.src = SRC;
 window.addEventListener('resize', fit);
 
@@ -179,7 +187,7 @@ document.getElementById('save').addEventListener('click', function(){
   var keep = {W:W,H:H,cw:canvas.width,ch:canvas.height,s:sampled};
   canvas.width = ow; canvas.height = oh; sample(ow, oh); draw(performance.now());
   var a = document.createElement('a'); a.download = 'lantern-keyart-4k.png'; a.href = canvas.toDataURL('image/png'); a.click();
-  canvas.width = keep.cw; canvas.height = keep.ch; W = keep.W; H = keep.H; sampled = keep.s;
+  canvas.width = keep.cw; canvas.height = keep.ch; W = keep.W; H = keep.H; sampled = keep.s; fit();
 });
 </script>
 </body>
