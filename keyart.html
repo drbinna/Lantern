@@ -10,9 +10,9 @@
   #stage{position:fixed;inset:0;display:grid;place-items:center}
   canvas{max-width:100%;max-height:100%;display:block;image-rendering:auto}
   #ui{position:fixed;left:18px;bottom:18px;display:flex;gap:8px;z-index:3}
-  #ui button{padding:9px 14px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.55);color:#fff;
+  #ui a,#ui button{text-decoration:none;display:inline-block;padding:9px 14px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.55);color:#fff;
     border-radius:7px;font:13px "Archivo",sans-serif;cursor:pointer;backdrop-filter:blur(6px)}
-  #ui button:hover{border-color:rgba(255,255,255,.5)}
+  #ui a:hover,#ui button:hover{border-color:rgba(255,255,255,.5)}
   #word{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;z-index:2}
   #word span{font:800 clamp(64px,12vw,220px) "Saira Extra Condensed",sans-serif;letter-spacing:.14em;color:#fff;
     text-shadow:0 0 40px rgba(0,0,0,.6)}
@@ -25,7 +25,8 @@
 <div id="ui">
   <button id="tWord">Hide wordmark</button>
   <button id="tAnim">Pause</button>
-  <button id="save">Export 4K PNG</button>
+  <a id="dl" href="assets/lantern-keyart-4k.png" download="lantern-keyart-4k.png">Download 4K</a>
+  <button id="save">Export this frame</button>
 </div>
 
 <script>
