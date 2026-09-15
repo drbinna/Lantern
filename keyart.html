@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lantern · Key art</title>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@800&family=Archivo:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:"Archivo",system-ui,sans-serif}
+  #stage{position:fixed;inset:0;display:grid;place-items:center}
+  canvas{max-width:100%;max-height:100%;display:block}
+  #ui{position:fixed;left:18px;bottom:18px;display:flex;gap:8px;z-index:3}
+  #ui button{padding:9px 14px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.55);color:#fff;
+    border-radius:7px;font:13px "Archivo",sans-serif;cursor:pointer;backdrop-filter:blur(6px)}
+  #ui button:hover{border-color:rgba(255,255,255,.5)}
+  #word{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;z-index:2}
+  #word span{font:800 clamp(64px,12vw,220px) "Saira Extra Condensed",sans-serif;letter-spacing:.14em;color:#fff;
+    text-shadow:0 0 40px rgba(0,0,0,.6)}
+  #word i{display:block;width:min(46vw,520px);height:1px;background:rgba(255,255,255,.7);margin:14px auto 0}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c"></canvas></div>
+<div id="word"><div><span>LANTERN</span><i></i></div></div>
+<div id="ui">
+  <button id="tWord">Hide wordmark</button>
+  <button id="tAnim">Pause</button>
+  <button id="save">Export 4K PNG</button>
+</div>
+
+<script>
+/* ---------------------------------------------------------------
+   ASCII / mosaic effect — reimplementation of the 21st.dev recipe
+   Parameters below are the exact JSON supplied.
+   --------------------------------------------------------------- */
+var P = {
+  renderMode:"mosaic", bgMode:"solid", bgBlur:12, bgOpacity:80, cellSize:3, coverage:100, invert:false,
+  styleBlend:"source-over", charSet:"binary", brightness:40, contrast:45, edgeEmphasis:0, density:100,
+  toneCurve:[{x:0,y:0},{x:0.28,y:0.14},{x:0.784426084620838,y:0},{x:1,y:1},{x:0.99,y:0}],
+  tint:"#cccccc", tintOpacity:38, overlayBlend:"screen", saturation:67, grayscale:70, blurType:"off",
+  pfx:{ halftone:{enabled:true,intensity:2} },
+  animated:true, animStyle:"shimmer", animSpeed:{enabled:true,intensity:233}, animIntensity:{enabled:true,intensity:40}
+};
+
+var SRC = "assets/desert-uav.png";   // same-origin so the canvas stays readable
+var canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
+var img = new Image(), sampled = null, W = 0, H = 0, running = true, t0 = performance.now();
+
+/* ---------- tone curve → 256-entry LUT.
+   The supplied preset carries two stray points at y=0 (x=0.78, x=0.99) that zero the
+   highlights when applied literally; they are dropped here and the shadow shape kept. ---------- */
+function buildLUT(curve){
+  var pts = curve.filter(function(p){ return !(p.y===0 && p.x>0.5); }).sort(function(a,b){ return a.x-b.x; });
+  var lut = new Uint8ClampedArray(256);
+  for(var i=0;i<256;i++){
+    var x=i/255, y=pts[pts.length-1].y;
+    for(var k=0;k<pts.length-1;k++){ var a=pts[k], b=pts[k+1];
+      if(x>=a.x && x<=b.x){ y = a.y + (b.y-a.y)*((x-a.x)/((b.x-a.x)||1)); break; } }
+    lut[i]=Math.round(Math.max(0,Math.min(1,y))*255);
+  }
+  return lut;
+}
+var LUT = buildLUT(P.toneCurve);
+
+/* ---------- colour adjustments, in the recipe's order ---------- */
+function adjust(r,g,b){
+  var br = 1 + P.brightness/100;  r*=br; g*=br; b*=br;                    /* brightness +40% */
+  var ct = 1 + P.contrast/100;    r=(r-128)*ct+128; g=(g-128)*ct+128; b=(b-128)*ct+128;   /* contrast +45% */
+  r=LUT[clamp8(r)]; g=LUT[clamp8(g)]; b=LUT[clamp8(b)];
+  var l=0.299*r+0.587*g+0.114*b, s=P.saturation/100; r=l+(r-l)*s; g=l+(g-l)*s; b=l+(b-l)*s;
+  var gs=P.grayscale/100; l=0.299*r+0.587*g+0.114*b; r+= (l-r)*gs; g+=(l-g)*gs; b+=(l-b)*gs;
+  var t=0xcc, ta=P.tintOpacity/100;                                        /* screen tint */
+  r += (255-(255-r)*(255-t)/255 - r)*ta; g += (255-(255-g)*(255-t)/255 - g)*ta; b += (255-(255-b)*(255-t)/255 - b)*ta;
+  if(P.invert){ r=255-r; g=255-g; b=255-b; }
+  return [clamp8(r),clamp8(g),clamp8(b)];
+}
+function clamp8(v){ return v<0?0:v>255?255:Math.round(v); }
+
+/* ---------- sample the source into a cell grid ---------- */
+function sample(targetW, targetH){
+  W = targetW; H = targetH;
+  var off = document.createElement('canvas'); off.width = W; off.height = H;
+  var octx = off.getContext('2d');
+  octx.drawImage(img, 0, 0, W, H);
+  var data = octx.getImageData(0,0,W,H).data;
+  var cs = P.cellSize, cols = Math.ceil(W/cs), rows = Math.ceil(H/cs);
+  var cells = new Float32Array(cols*rows*4);
+  for(var cy=0; cy<rows; cy++){
+    for(var cx=0; cx<cols; cx++){
+      var r=0,g=0,b=0,n=0;
+      for(var y=cy*cs; y<Math.min(H,(cy+1)*cs); y++){
+        var row = y*W*4;
+        for(var x=cx*cs; x<Math.min(W,(cx+1)*cs); x++){
+          var i = row + x*4; r+=data[i]; g+=data[i+1]; b+=data[i+2]; n++;
+        }
+      }
+      var o = (cy*cols+cx)*4;
+      var adj = adjust(r/n, g/n, b/n);
+      cells[o]=adj[0]; cells[o+1]=adj[1]; cells[o+2]=adj[2];
+      cells[o+3] = 0.299*adj[0] + 0.587*adj[1] + 0.114*adj[2];   // luminance
+    }
+  }
+  sampled = {cells:cells, cols:cols, rows:rows};
+}
+
+/* ---------- draw one frame ---------- */
+function draw(time){
+  var cs = P.cellSize, cols = sampled.cols, rows = sampled.rows, cells = sampled.cells;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H);          // bgMode: solid
+  ctx.globalCompositeOperation = P.styleBlend;
+
+  var speed = P.animSpeed.intensity/100, amp = P.animIntensity.intensity/100;
+  var tt = (time - t0)/1000 * speed;
+  var cov = P.coverage/100, dens = P.density/100;
+
+  for(var cy=0; cy<rows; cy++){
+    for(var cx=0; cx<cols; cx++){
+      if(cov < 1 && ((cx*7 + cy*13) % 100)/100 > cov) continue;
+      var o = (cy*cols+cx)*4;
+      var r=cells[o], g=cells[o+1], b=cells[o+2], l=cells[o+3];
+
+      /* shimmer: per-cell brightness ripple travelling across the grid */
+      var sh = 1;
+      if(P.animated){
+        sh = 1 + amp * 0.35 * Math.sin(tt*2.2 + cx*0.18 + cy*0.11) * Math.sin(tt*0.9 + cy*0.07 - cx*0.05);
+      }
+      var rr = clamp8(r*sh), gg = clamp8(g*sh), bb = clamp8(b*sh);
+
+      /* mosaic: filled square, size scaled by luminance and density */
+      var size = cs * (0.55 + 0.45 * (l/255)) * dens;
+      var pad = (cs - size)/2;
+      ctx.fillStyle = 'rgb('+rr+','+gg+','+bb+')';
+      ctx.fillRect(cx*cs + pad, cy*cs + pad, size, size);
+    }
+  }
+
+  /* halftone at intensity 2 — a faint dot lattice over midtones */
+  var hi = P.pfx.halftone.intensity/100;
+  if(P.pfx.halftone.enabled && hi > 0){
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.fillStyle = 'rgba(0,0,0,'+(hi*0.6)+')';
+    for(var y=0; y<H; y+=cs*2){
+      for(var x=(y/(cs*2))%2 ? cs : 0; x<W; x+=cs*2){ ctx.fillRect(x,y,1,1); }
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+}
+
+function loop(time){
+  if(running) draw(time);
+  requestAnimationFrame(loop);
+}
+
+/* ---------- size to the viewport, keep the photo's aspect ---------- */
+function fit(){
+  var ar = img.naturalWidth/img.naturalHeight;
+  var vw = window.innerWidth, vh = window.innerHeight, w, h;
+  if(vw/vh > ar){ h = vh; w = Math.round(h*ar); } else { w = vw; h = Math.round(w/ar); }
+  canvas.width = w; canvas.height = h;
+  sample(w, h);
+}
+
+img.onload = function(){ fit(); requestAnimationFrame(loop); };
+img.src = SRC;
+window.addEventListener('resize', fit);
+
+/* ---------- controls ---------- */
+document.getElementById('tWord').addEventListener('click', function(){
+  var w = document.getElementById('word'); var on = w.style.display !== 'none';
+  w.style.display = on ? 'none' : 'grid'; this.textContent = on ? 'Show wordmark' : 'Hide wordmark';
+});
+document.getElementById('tAnim').addEventListener('click', function(){
+  running = !running; this.textContent = running ? 'Pause' : 'Play';
+});
+document.getElementById('save').addEventListener('click', function(){
+  /* render one still frame at 3840 × (3840 / aspect) and download it */
+  var ar = img.naturalWidth/img.naturalHeight, ow = 3840, oh = Math.round(ow/ar);
+  var keep = {W:W,H:H,cw:canvas.width,ch:canvas.height,s:sampled};
+  canvas.width = ow; canvas.height = oh; sample(ow, oh); draw(performance.now());
+  var a = document.createElement('a'); a.download = 'lantern-keyart-4k.png'; a.href = canvas.toDataURL('image/png'); a.click();
+  canvas.width = keep.cw; canvas.height = keep.ch; W = keep.W; H = keep.H; sampled = keep.s;
+});
+</script>
+</body>
+</html>
