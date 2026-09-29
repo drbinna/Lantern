@@ -10,7 +10,6 @@
 
   var MAX = 12;          // minutes on the axis
   var DURATION = 8000;   // ms of real time to play all 12 minutes (90x)
-  var SPEED = Math.round(MAX * 60000 / DURATION);
 
   var ROWS = [
     { label: 'Lantern overhead', sub: 'design target, nearest dock', min: 1.5, fast: true },
@@ -62,7 +61,6 @@
   function Race() {
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var st = useState(reduce ? MAX : 0), t = st[0], setT = st[1];
-    var run = useState(0), runId = run[0], setRun = run[1];
     var box = useRef(null), raf = useRef(0), started = useRef(false);
 
     function play() {
@@ -85,19 +83,8 @@
       return function () { io.disconnect(); cancelAnimationFrame(raf.current); };
     }, []);
 
-    useEffect(function () { if (runId) play(); }, [runId]);
-
     var done = t >= MAX;
     return h('div', { ref: box, className: 'race' + (done ? ' done' : '') },
-      h('div', { className: 'race-bar' },
-        h('div', { className: 'race-clock', 'aria-hidden': 'true' },
-          h('span', { className: 'dot' + (t > 0 && !done ? ' live' : '') }),
-          'Elapsed ', h('b', null, clock(t)),
-          h('span', { className: 'speed' }, ' · shown ' + SPEED + '× faster')
-        ),
-        h('button', { type: 'button', className: 'replay', onClick: function () { started.current = true; setT(0); setRun(runId + 1); }, disabled: t > 0 && !done },
-          h('span', { 'aria-hidden': 'true' }, '↻ '), done || t === 0 ? 'Replay' : 'Playing…')
-      ),
       h('div', { className: 'tl' }, ROWS.map(function (r, i) { return h(Row, { key: i, row: r, t: t }); })),
       h('div', { className: 'axis', 'aria-hidden': 'true' }, h('div'),
         h('div', { className: 'ticks' }, [0, 3, 6, 9, 12].map(function (n) { return h('span', { key: n, className: t >= n && t > 0 ? 'hit' : '' }, n === 12 ? '12 min' : n); }))),
