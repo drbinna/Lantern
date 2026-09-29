@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lantern — Eyes on in ninety seconds</title>
+<title>Lantern — Autonomous aerial security response</title>
+<meta name="description" content="Lantern pairs 360° camera stations with docked drones. When a camera flags activity, the closest drone flies out with RGB and thermal cameras so security sees what is happening before anyone arrives.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@800&family=Cormorant+Garamond:wght@500;600&family=Archivo:wdth,wght@62..125,400;62..125,500;62..125,700&display=swap" rel="stylesheet">
@@ -199,7 +200,9 @@
     .step { min-height: 46vh; }
   }
 
-  .products { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 56px); }
+  .products { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(24px, 3vw, 44px); }
+  .spec-note { margin: -24px 0 40px; color: var(--ink-2); max-width: var(--measure); }
+  @media (max-width: 1080px) { .products { grid-template-columns: 1fr; max-width: 640px; } }
   .product .stage { background: var(--panel); border-radius: 16px; padding: clamp(16px, 3vw, 36px); margin-bottom: 22px; }
   .product .stage svg { display: block; }
   .product h3 { margin: 0 0 8px; font-size: 26px; font-weight: 500; letter-spacing: -0.01em; }
@@ -280,9 +283,9 @@
       <nav class="poster-nav" aria-label="Primary">
         <ul>
           <li><a href="#how">How it works</a></li>
-          <li><a href="#specs">Aircraft and dock</a></li>
-          <li><a href="#limits">What it won't do</a></li>
-          <li><a href="#policy">Policy</a></li>
+          <li><a href="#specs">The system</a></li>
+          <li><a href="#next">Where we're going</a></li>
+          <li><a href="#limits">Lines we don't cross</a></li>
           <li><a class="pill" href="#contact">Set up a pilot</a></li>
         </ul>
       </nav>
@@ -294,8 +297,8 @@
 
       <div class="poster-copy" id="posterCopy">
         <div class="veil" aria-hidden="true"></div>
-        <h2>Situational awareness, before the first officer arrives.</h2>
-        <p class="body">When a call comes in, a nearby rooftop drone launches and delivers live video to dispatch and responding officers in as little as 90 seconds.</p>
+        <h2>See what’s happening before anyone arrives.</h2>
+        <p class="body">Lantern pairs 360° camera stations with docked drones. When a camera flags activity, the closest drone flies out on its own and streams RGB and thermal video to security, while the camera keeps watching.</p>
       </div>
     </article>
   </div>
@@ -305,9 +308,9 @@
   <section class="timeline" aria-labelledby="tl-h">
     <div class="wrap">
       <h2 id="tl-h">The gap this closes</h2>
-      <p class="sub">Typical time from first alarm to someone seeing the scene, on a mid-sized campus.</p>
+      <p class="sub">Typical time from the first alert to someone seeing the scene on a mid-sized campus. Lantern’s time is our design target; Chula Vista PD’s drone program averages about 97 seconds.</p>
       <div class="tl">
-        <div class="row"><div class="label">Lantern overhead<small>from the nearest dock</small></div><div class="track"><div class="fill tiny" style="--w: 12.5%"><span>1 min 30 s</span></div></div></div>
+        <div class="row"><div class="label">Lantern overhead<small>design target, nearest dock</small></div><div class="track"><div class="fill tiny" style="--w: 12.5%"><span>1 min 30 s</span></div></div></div>
         <div class="row"><div class="label">First patrol car<small>on a good day</small></div><div class="track"><div class="fill slow" style="--w: 66%"><span>8 min</span></div></div></div>
         <div class="row"><div class="label">First patrol car<small>across campus, during class change</small></div><div class="track"><div class="fill slow" style="--w: 100%"><span>12 min</span></div></div></div>
       </div>
@@ -316,7 +319,7 @@
   </section>
 
   <section id="how" class="wrap plain how" data-step="0">
-    <h2 class="big">What happens when a call comes in</h2>
+    <h2 class="big">What happens when a camera sees something</h2>
     <div class="how-grid">
       <div class="how-map">
         <div class="map-frame aerial">
@@ -350,27 +353,59 @@
             </g>
           </svg>
           <div class="map-tag">
-            <span class="t t0">The campus at rest. Aircraft docked on a rooftop near the center.</span>
-            <span class="t t1"><b>0:00</b> Blue-light call from the lot by the arena.</span>
-            <span class="t t2"><b>0:14</b> Launched from the nearest dock. Flying itself there.</span>
-            <span class="t t3"><b>1:30</b> Live video to dispatch and every unit on the way.</span>
+            <span class="t t0">The campus at rest. Camera stations watching, drones docked on a rooftop near the center.</span>
+            <span class="t t1"><b>0:00</b> A camera station flags a person in the arena lot after hours.</span>
+            <span class="t t2"><b>0:10</b> The closest drone launches from its dock and flies itself there.</span>
+            <span class="t t3"><b>1:30</b> Live RGB and thermal video in the security office. The camera keeps watching.</span>
           </div>
         </div>
       </div>
       <div class="how-steps">
-        <div class="step" data-i="1"><h3>Something raises the alarm</h3><p>A 911 call, a blue-light phone, a panic button, a door alarm. Lantern never decides on its own that something is wrong. It responds to the alarms your campus already has.</p></div>
-        <div class="step" data-i="2"><h3>Dispatch launches with one action</h3><p>The dispatcher sends the aircraft to the address without leaving the console. The nearest dock opens, the aircraft launches, and it flies itself there — around trees, around buildings.</p></div>
-        <div class="step" data-i="3"><h3>Everyone en route sees the same picture</h3><p>Live video reaches dispatch, incident command, and the phone of every responding officer. Which building. Which door. Who is outside it. Often, that nothing is happening at all.</p></div>
+        <div class="step" data-i="1"><h3>A camera station flags activity</h3><p>360° stations watch lots, perimeters and quiet corners around the clock. When one sees a person, vehicle or heat source where there shouldn’t be one, it raises an alert. Blue-light phones, alarms and 911 calls can trigger it too.</p></div>
+        <div class="step" data-i="2"><h3>The closest drone goes to look</h3><p>Lantern picks the nearest drone with the battery to make the trip. Its dock opens and it flies itself to the spot, so no officer has to leave the security office to launch it.</p></div>
+        <div class="step" data-i="3"><h3>Security sees it live, even in the dark</h3><p>RGB and thermal video reaches the security office and every officer’s phone, while the fixed camera keeps watching the wider area. Often it shows that nothing is happening at all. Then the drone returns to its dock to charge.</p></div>
       </div>
     </div>
   </section>
 
   <section id="specs" class="wrap plain">
-    <h2 class="big">Two products. One system.</h2>
+    <h2 class="big">Three parts. One system.</h2>
+    <p class="spec-note">Figures below are design targets for the product. Today we fly a working prototype: an X650 airframe on a Pixhawk flight controller running PX4, with an NVIDIA Jetson Orin NX onboard computer.</p>
     <div class="products">
       <article class="product">
         <div class="stage" aria-hidden="true">
-          <svg viewBox="0 0 400 300" width="100%" role="img" aria-label="Isometric illustration of the Lantern aircraft">
+          <svg viewBox="0 0 400 300" width="100%" role="img" aria-label="Illustration of a Lantern 360-degree camera station on a pole">
+            <ellipse cx="200" cy="268" rx="90" ry="14" fill="#0d1b33" opacity=".08"/>
+            <ellipse cx="200" cy="120" rx="150" ry="40" fill="#1f4fd8" opacity=".07"/>
+            <ellipse cx="200" cy="120" rx="150" ry="40" fill="none" stroke="#1f4fd8" stroke-width="2" stroke-dasharray="4 5"/>
+            <ellipse cx="200" cy="120" rx="96" ry="26" fill="none" stroke="#1f4fd8" stroke-width="1.5" opacity=".45"/>
+            <rect x="192" y="126" width="16" height="136" rx="3" fill="#d5dae2"/>
+            <rect x="196" y="126" width="6" height="136" fill="#ffffff" opacity=".7"/>
+            <ellipse cx="200" cy="262" rx="28" ry="8" fill="#c3c9d3"/>
+            <rect x="170" y="92" width="60" height="30" rx="6" fill="#ffffff" stroke="#cfd6df" stroke-width="1.5"/>
+            <path d="M172,122 a28,22 0 0 0 56,0 z" fill="#0d1b33"/>
+            <circle cx="186" cy="130" r="4" fill="#1f4fd8"/>
+            <circle cx="200" cy="134" r="4" fill="#1f4fd8"/>
+            <circle cx="214" cy="130" r="4" fill="#1f4fd8"/>
+            <rect x="182" y="76" width="36" height="16" rx="3" fill="#eef1f4" stroke="#cfd6df"/>
+            <line x1="200" y1="76" x2="200" y2="58" stroke="#b4b9c3" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="200" cy="56" r="4" fill="#1f4fd8"/>
+          </svg>
+        </div>
+        <h3>Camera station</h3>
+        <p class="lede">The eyes that never leave. A 360° station on a pole or rooftop that watches its area and calls a drone when it sees something worth a closer look.</p>
+        <dl class="kv">
+          <div><dt>Field of view</dt><dd>360°, day and night</dd></div>
+          <div><dt>Detects</dt><dd>People, vehicles and heat sources</dd></div>
+          <div><dt>On an alert</dt><dd>Calls the closest drone, keeps watching</dd></div>
+          <div><dt>Mounting</dt><dd>Light pole, wall or rooftop</dd></div>
+          <div><dt>Processing</dt><dd>On the station, not in the cloud</dd></div>
+        </dl>
+      </article>
+
+      <article class="product">
+        <div class="stage" aria-hidden="true">
+          <svg viewBox="0 0 400 300" width="100%" role="img" aria-label="Isometric illustration of the Lantern response drone">
             <ellipse cx="200" cy="262" rx="120" ry="16" fill="#0d1b33" opacity=".08"/>
             <ellipse cx="52" cy="140" rx="50" ry="28" fill="none" stroke="#1f4fd8" stroke-width="2" stroke-dasharray="4 5"/>
             <ellipse cx="200" cy="66" rx="50" ry="28" fill="none" stroke="#1f4fd8" stroke-width="2" stroke-dasharray="4 5"/>
@@ -403,15 +438,15 @@
             <circle cx="250" cy="152" r="3" fill="#1f4fd8"/>
           </svg>
         </div>
-        <h3>Aircraft</h3>
-        <p class="lede">A camera with rotors. White shell, guarded props, a visible gimbal, and your safety office's name on the side. Built to be recognized, not to impress.</p>
+        <h3>Response drone</h3>
+        <p class="lede">A shared responder. Any drone can answer any station, so a campus needs fewer drones than cameras. White shell, guarded props, and your safety office's name on the side.</p>
         <dl class="kv">
           <div><dt>Motor to motor</dt><dd>400 mm</dd></div>
           <div><dt>Weight</dt><dd>2.0 kg all-up</dd></div>
           <div><dt>Endurance</dt><dd>35 min, full payload</dd></div>
-          <div><dt>Cameras</dt><dd>30× optical zoom and 640 × 512 thermal</dd></div>
+          <div><dt>Cameras</dt><dd>RGB zoom and 640 × 512 thermal</dd></div>
           <div><dt>Weather</dt><dd>−10 °C to 45 °C, gusts to 25 kt</dd></div>
-          <div><dt>Noise at 200 ft</dt><dd>Under 65 dBA</dd></div>
+          <div><dt>Safety</dt><dd>ADS-B receiver and parachute</dd></div>
         </dl>
       </article>
 
@@ -444,30 +479,49 @@
           </svg>
         </div>
         <h3>Dock</h3>
-        <p class="lede">A rooftop box that opens, launches, catches and charges the aircraft with no one present.</p>
+        <p class="lede">A rooftop box that opens, launches, catches and charges a drone with no one present.</p>
         <dl class="kv">
           <div><dt>Coverage</dt><dd>About half a mile, 90 s to overhead</dd></div>
           <div><dt>Landing</dt><dd>Within 10 cm, self-centering pad</dd></div>
           <div><dt>Recharge</dt><dd>To 80% in 35 min</dd></div>
           <div><dt>Climate</dt><dd>Heated and cooled, cold starts year-round</dd></div>
           <div><dt>Power loss</dt><dd>Two launches on battery backup</dd></div>
-          <div><dt>Availability</dt><dd>99.5% monthly, reported to you</dd></div>
+          <div><dt>Build</dt><dd>3D-printed prototype at ORU</dd></div>
         </dl>
       </article>
     </div>
   </section>
 
+  <section id="next" class="wrap plain">
+    <h2 class="big">Starting on campus. Built for any large property.</h2>
+    <div class="open">
+      <div>
+        <p>We’re starting with campus security at Oral Roberts University in Tulsa. ORU sits inside the Class D airspace of Tulsa Riverside Airport, so our first phase flies the full detect-to-return workflow with a certified pilot keeping the drone in sight, under FAA airspace authorization.</p>
+        <p>Full autonomy comes next, once we hold a waiver to fly beyond visual line of sight, backed by ADS-B receivers on every drone, ground-based radar, and parachutes for flights over people.</p>
+        <p>The same system fits anywhere the grounds are large and empty at night and a closer look is worth something before anyone drives out.</p>
+      </div>
+      <div class="ledger" aria-label="Markets Lantern serves">
+        <div class="head"><span>Who Lantern is for</span><span>Status</span></div>
+        <div class="rowl"><span>Campus security</span><span class="r">Universities</span><span class="cancel">Now, at ORU</span></div>
+        <div class="rowl"><span>Police departments</span><span class="r">Drone-first-responder programs</span><span class="r">Next</span></div>
+        <div class="rowl"><span>Construction sites</span><span class="r">Equipment and materials theft</span><span class="r">Next</span></div>
+        <div class="rowl"><span>Farms and ranches</span><span class="r">Livestock, fuel, gates</span><span class="r">Exploring</span></div>
+        <div class="rowl"><span>Mining operations</span><span class="r">Perimeters and remote sites</span><span class="r">Exploring</span></div>
+      </div>
+    </div>
+  </section>
+
   <section id="limits" class="not" data-limit="0">
     <div class="wrap plain">
-      <h2 class="big">What it will not do</h2>
+      <h2 class="big">Lines we don’t cross</h2>
       <div class="not-grid">
         <ul class="not-list">
           <li data-i="1"><strong>Identify people.</strong><span>No facial recognition, no biometrics. Not configurable, not available.</span></li>
-          <li data-i="2"><strong>Decide someone is a threat.</strong><span>No automated weapon or behavior detection. A person looks at the video and makes the call.</span></li>
-          <li data-i="3"><strong>Patrol.</strong><span>The aircraft does not fly on a schedule or watch the campus. It leaves the dock when there is a call and returns when the call is over.</span></li>
+          <li data-i="2"><strong>Decide someone is a threat.</strong><span>Cameras flag people, vehicles and heat where none should be. A person on your team looks at the video and decides what it means.</span></li>
+          <li data-i="3"><strong>Fly without a reason.</strong><span>Drones don’t sweep the campus on a schedule. They stay docked until a camera, sensor or alarm gives them one, and return when the look is done.</span></li>
           <li data-i="4"><strong>See indoors.</strong><span>It gives you the building, the entrances, the exits and the approach. It does not give you the hallway.</span></li>
-          <li data-i="5"><strong>Fly where you've said it can't.</strong><span>Residence hall windows, the health center, the neighbors' property. Exclusion zones are enforced in the flight software, not in a policy binder.</span></li>
-          <li data-i="6"><strong>Keep footage it doesn't need.</strong><span>Non-incident flights delete themselves on a short clock you set. Every view is logged.</span></li>
+          <li data-i="5"><strong>Look where you've said it can't.</strong><span>Residence hall windows, the health center, the neighbors' property. Drones won’t fly there and cameras mask them out, enforced in software, not in a policy binder.</span></li>
+          <li data-i="6"><strong>Keep footage it doesn't need.</strong><span>Camera and flight footage with no incident deletes itself on a short clock you set. Every view is logged.</span></li>
         </ul>
         <div class="not-map">
           <div class="map-frame illus">
@@ -513,19 +567,19 @@
   </section>
 
   <section id="policy" class="wrap plain">
-    <h2 class="big">Legible to the people it flies over</h2>
+    <h2 class="big">Legible to the people it watches over</h2>
     <div class="open">
       <div>
-        <p>Every campus running Lantern publishes a flight log. Not the video — the count, the reason, how long the aircraft was up, and whether the ground response was cancelled after the aircraft arrived. That last number is usually the one that wins over a skeptical room.</p>
+        <p>Every campus running Lantern publishes a flight log. Not the video — what triggered each flight, how long the drone was up, and whether officers still needed to go after it arrived. That last number is usually the one that wins over a skeptical room.</p>
         <p>We provide a use-policy template written for shared governance, and we'll sit in the meeting where it gets debated.</p>
       </div>
       <div class="ledger" aria-label="Example public flight log">
         <div class="head"><span>Flight log, example week</span><span>Public</span></div>
-        <div class="rowl"><span>Mon — welfare check, north quad</span><span class="r">4 min</span><span class="cancel">Ground stood down</span></div>
-        <div class="rowl"><span>Tue — alarm, engineering loading dock</span><span class="r">6 min</span><span class="r">Officers continued</span></div>
+        <div class="rowl"><span>Mon — camera alert, north lot after hours</span><span class="r">4 min</span><span class="cancel">Ground stood down</span></div>
+        <div class="rowl"><span>Tue — door alarm, engineering loading dock</span><span class="r">6 min</span><span class="r">Officers continued</span></div>
         <div class="rowl"><span>Wed — blue-light call, lot C</span><span class="r">3 min</span><span class="cancel">Ground stood down</span></div>
-        <div class="rowl"><span>Thu — medical, athletics fields</span><span class="r">9 min</span><span class="r">Officers continued</span></div>
-        <div class="rowl"><span>Sat — noise complaint, no launch</span><span class="r">—</span><span class="r">Declined by dispatch</span></div>
+        <div class="rowl"><span>Thu — camera alert, athletics fields</span><span class="r">9 min</span><span class="r">Officers continued</span></div>
+        <div class="rowl"><span>Sat — camera alert, deer by the fence</span><span class="r">—</span><span class="r">No launch, dismissed</span></div>
       </div>
     </div>
   </section>
@@ -536,15 +590,16 @@
     <div class="foot-grid">
       <div class="foot-brand">
         <div class="foot-mark"><span class="dot" aria-hidden="true"></span><span>Lantern</span></div>
-        <p>A drone-as-first-responder system for outdoor campus environments. Eyes on the scene before the first officer arrives.</p>
+        <p>An autonomous aerial security response system. Starting with campus security in Tulsa, then police departments, construction sites, farms and mines.</p>
         <a class="foot-cta" href="mailto:obi@lanternaero.com">Talk to us about a pilot</a>
       </div>
       <div>
         <h4>Product</h4>
         <ul>
           <li><a href="#how">How it works</a></li>
-          <li><a href="#specs">Aircraft and dock</a></li>
-          <li><a href="#limits">What it won't do</a></li>
+          <li><a href="#specs">Camera station, drone and dock</a></li>
+          <li><a href="#next">Markets and roadmap</a></li>
+          <li><a href="#limits">Lines we don't cross</a></li>
           <li><a href="#policy">Policy and transparency</a></li>
         </ul>
       </div>
@@ -553,7 +608,7 @@
         <ul>
           <li><a href="#">Use-policy template</a></li>
           <li><a href="#">Example public flight log</a></li>
-          <li><a href="#">Part 107 and Part 108 notes</a></li>
+          <li><a href="#">Airspace and Part 107 notes</a></li>
           <li class="pulse"><a href="#">Pilot program FAQ</a></li>
         </ul>
       </div>
