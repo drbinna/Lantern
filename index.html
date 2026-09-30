@@ -238,12 +238,6 @@
 
   .open { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 80px); align-items: start; }
   .open p { max-width: var(--measure); color: var(--ink-2); margin: 0 0 16px; }
-  .ledger { border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
-  .ledger .head { padding: 14px 18px; border-bottom: 1px solid var(--rule); display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-2); }
-  .ledger .rowl { display: grid; grid-template-columns: 1fr auto auto; gap: 18px; padding: 13px 18px; border-bottom: 1px solid var(--rule); font-size: 15px; font-variant-numeric: tabular-nums; }
-  .ledger .rowl:last-child { border-bottom: 0; }
-  .ledger .rowl .r { color: var(--ink-2); }
-  .ledger .rowl .cancel { color: var(--cobalt); font-weight: 500; }
 
   .foot { position: relative; overflow: hidden; margin: clamp(16px, 3vw, 32px); border-radius: 24px; background: #0b1730; color: rgba(245,247,251,.72); }
   .foot-inner { position: relative; z-index: 2; max-width: 1280px; margin: 0 auto; padding: clamp(36px, 5vw, 64px) clamp(24px, 4vw, 56px) clamp(24px, 3vw, 40px); }
@@ -286,6 +280,64 @@
     .row, .axis { grid-template-columns: 1fr; gap: 8px; }
     .fill.tiny span { margin-left: calc(100% + 8px); font-size: 14px; }
   }
+  /* ---- fleet gallery (assets/drone-gallery.js) ---- */
+  .fleet-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); grid-template-areas: "head media" "list media"; column-gap: clamp(28px, 5vw, 80px); align-items: start; }
+  .fleet-head { grid-area: head; }
+  .fleet-media { grid-area: media; position: sticky; top: 24px; }
+  .fleet-list { grid-area: list; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--rule); border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--ink-2); margin-bottom: 20px; }
+  .eyebrow i { width: 7px; height: 7px; border-radius: 50%; background: var(--cobalt); }
+  #fleet h2.big { margin-bottom: 18px; }
+  .fleet-desc { margin: 0 0 22px; color: var(--ink-2); max-width: 52ch; }
+  .chips { list-style: none; margin: 0 0 32px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips li { padding: 6px 12px; background: var(--panel); border-radius: 999px; font-size: 14px; font-weight: 500; }
+  .acc { border-top: 1px solid var(--rule); }
+  .acc-item { border-bottom: 1px solid var(--rule); }
+  .acc-h { margin: 0; font: inherit; }
+  .acc-btn { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: 14px; padding: 18px 2px; }
+  .acc-btn:focus-visible { outline: 3px solid var(--cobalt); outline-offset: 2px; border-radius: 4px; }
+  .acc-name { font-size: 22px; font-weight: 500; letter-spacing: -0.01em; }
+  .acc-market { color: var(--ink-2); font-size: 15px; }
+  .acc-btn .chev { align-self: center; color: var(--ink-2); transition: transform .25s ease; }
+  .acc-item.is-open .chev { transform: rotate(180deg); color: var(--cobalt); }
+  .acc-item.is-open .acc-name { color: var(--cobalt); }
+  .acc-btn:hover .acc-name { color: var(--cobalt); }
+  .acc-panel { padding: 0 2px 22px; animation: accIn .3s ease; }
+  @keyframes accIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+  .acc-lede { margin: 0 0 14px; color: var(--ink-2); max-width: 56ch; }
+  .acc-specs { margin: 0 0 14px; display: grid; }
+  .acc-specs div { display: grid; grid-template-columns: 32% 1fr; gap: 14px; padding: 8px 0; border-top: 1px dashed var(--rule); font-size: 15px; }
+  .acc-specs dt { color: var(--ink-2); }
+  .acc-specs dd { margin: 0; }
+  .acc-status { margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--ink-2); }
+  .acc-status i { width: 8px; height: 8px; border-radius: 50%; background: var(--rule); }
+  .acc-status.live i { background: #1faa59; box-shadow: 0 0 0 3px rgba(31,170,89,.18); }
+  .fleet-cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 30px 0 18px; }
+  .fleet-trust { margin: 0; font-size: 14px; color: var(--ink-2); max-width: 58ch; }
+  .stage { position: relative; aspect-ratio: 1 / 1; border-radius: 20px; overflow: hidden; background: #d6dce4; touch-action: pan-y; }
+  .stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.03); transition: opacity .5s ease, transform .8s cubic-bezier(.2,.7,.2,1); user-select: none; }
+  .stage img.on { opacity: 1; transform: none; }
+  .stage-top { position: absolute; inset: 0 0 auto 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 18px 20px; }
+  .stage-name { font-size: 20px; font-weight: 500; display: flex; flex-direction: column; line-height: 1.2; }
+  .stage-name small { font-size: 13px; color: var(--ink-2); font-weight: 400; }
+  .stage-note { font-size: 12px; color: var(--ink-2); background: rgba(255,255,255,.6); padding: 4px 10px; border-radius: 999px; backdrop-filter: blur(6px); }
+  .pills { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; gap: 4px; padding: 4px; background: rgba(255,255,255,.72); border: 1px solid rgba(13,27,51,.08); border-radius: 999px; backdrop-filter: blur(10px); max-width: calc(100% - 24px); }
+  .pills button { all: unset; cursor: pointer; white-space: nowrap; padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 500; color: var(--ink-2); transition: background .2s, color .2s; }
+  .pills button:hover { color: var(--ink); }
+  .pills button.on { background: var(--ink); color: #fff; }
+  .pills button:focus-visible { outline: 3px solid var(--cobalt); outline-offset: 2px; }
+  .stage-credit { margin: 10px 4px 0; font-size: 13px; color: var(--ink-2); }
+  .stage-credit a { text-decoration: underline; text-underline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { .stage img, .acc-panel, .acc-btn .chev { transition: none; animation: none; transform: none; } }
+  @media (max-width: 880px) {
+    .fleet-grid { grid-template-columns: 1fr; grid-template-areas: "head" "media" "list"; }
+    .fleet-media { position: static; margin-bottom: 28px; }
+    .acc-btn { grid-template-columns: 1fr auto; row-gap: 2px; column-gap: 14px; }
+    .acc-market { grid-column: 1; grid-row: 2; font-size: 14px; }
+    .acc-btn .chev { grid-column: 2; grid-row: 1 / span 2; }
+    .pills button { padding: 7px 11px; font-size: 13px; }
+    .stage-top { padding: 14px 16px; }
+  }
 </style>
 </head>
 <body>
@@ -304,6 +356,7 @@
         <ul>
           <li><a href="#how">How it works</a></li>
           <li><a href="#specs">The system</a></li>
+          <li><a href="#fleet">The fleet</a></li>
           <li><a href="#next">Where we're going</a></li>
           <li><a href="#limits">Lines we don't cross</a></li>
           <li><a class="pill" href="#contact">Set up a pilot</a></li>
@@ -588,20 +641,19 @@
     </div>
   </section>
 
-  <section id="policy" class="wrap plain">
-    <h2 class="big">Legible to the people it watches over</h2>
-    <div class="open">
-      <div>
-        <p>Every campus running Lantern publishes a flight log. Not the video — what triggered each flight, how long the drone was up, and whether officers still needed to go after it arrived. That last number is usually the one that wins over a skeptical room.</p>
-        <p>We provide a use-policy template written for shared governance, and we'll sit in the meeting where it gets debated.</p>
-      </div>
-      <div class="ledger" aria-label="Example public flight log">
-        <div class="head"><span>Flight log, example week</span><span>Public</span></div>
-        <div class="rowl"><span>Mon — camera alert, north lot after hours</span><span class="r">4 min</span><span class="cancel">Ground stood down</span></div>
-        <div class="rowl"><span>Tue — door alarm, engineering loading dock</span><span class="r">6 min</span><span class="r">Officers continued</span></div>
-        <div class="rowl"><span>Wed — blue-light call, lot C</span><span class="r">3 min</span><span class="cancel">Ground stood down</span></div>
-        <div class="rowl"><span>Thu — camera alert, athletics fields</span><span class="r">9 min</span><span class="r">Officers continued</span></div>
-        <div class="rowl"><span>Sat — camera alert, deer by the fence</span><span class="r">—</span><span class="r">No launch, dismissed</span></div>
+  <section id="fleet" class="wrap plain" aria-labelledby="fleet-title">
+    <div id="drone-gallery">
+      <div class="fleet-grid">
+        <div class="fleet-head">
+          <span class="eyebrow"><i aria-hidden="true"></i>The fleet</span>
+          <h2 id="fleet-title" class="big">One system. A drone for every site.</h2>
+          <p class="fleet-desc">Every Lantern drone runs the same software, answers the same camera alerts and returns to the same dock. The airframe is chosen to fit the site.</p>
+        </div>
+        <div class="fleet-list">
+          <p><strong>Sentinel</strong>: campus security and police departments. Prototype flying indoors.</p>
+          <p><strong>Quiver</strong> (by Arrow Air, open source): farms and ranches. Evaluating.</p>
+          <p><strong>Ranger</strong>: winged VTOL for mines and large industrial sites. Concept.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -622,7 +674,7 @@
           <li><a href="#specs">Camera station, drone and dock</a></li>
           <li><a href="#next">Markets and roadmap</a></li>
           <li><a href="#limits">Lines we don't cross</a></li>
-          <li><a href="#policy">Policy and transparency</a></li>
+          <li><a href="#fleet">The fleet</a></li>
         </ul>
       </div>
       <div>
@@ -683,6 +735,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin="anonymous" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous" defer></script>
 <script src="assets/gap-race.js" defer></script>
+<script src="assets/drone-gallery.js" defer></script>
 <script>
 (function () {
   function cssUrl(name) {
