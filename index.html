@@ -285,8 +285,6 @@
   .fleet-head { grid-area: head; }
   .fleet-media { grid-area: media; position: sticky; top: 24px; }
   .fleet-list { grid-area: list; }
-  .eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--rule); border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--ink-2); margin-bottom: 20px; }
-  .eyebrow i { width: 7px; height: 7px; border-radius: 50%; background: var(--cobalt); }
   #fleet h2.big { margin-bottom: 18px; }
   .fleet-desc { margin: 0 0 22px; color: var(--ink-2); max-width: 52ch; }
   .chips { list-style: none; margin: 0 0 32px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
@@ -305,13 +303,10 @@
   .acc-panel { padding: 0 2px 22px; animation: accIn .3s ease; }
   @keyframes accIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
   .acc-lede { margin: 0 0 14px; color: var(--ink-2); max-width: 56ch; }
-  .acc-specs { margin: 0 0 14px; display: grid; }
+  .acc-specs { margin: 0; display: grid; }
   .acc-specs div { display: grid; grid-template-columns: 32% 1fr; gap: 14px; padding: 8px 0; border-top: 1px dashed var(--rule); font-size: 15px; }
   .acc-specs dt { color: var(--ink-2); }
   .acc-specs dd { margin: 0; }
-  .acc-status { margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--ink-2); }
-  .acc-status i { width: 8px; height: 8px; border-radius: 50%; background: var(--rule); }
-  .acc-status.live i { background: #1faa59; box-shadow: 0 0 0 3px rgba(31,170,89,.18); }
   .fleet-cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 30px 0 18px; }
   .fleet-trust { margin: 0; font-size: 14px; color: var(--ink-2); max-width: 58ch; }
   .stage { position: relative; aspect-ratio: 1 / 1; border-radius: 20px; overflow: hidden; background: #d6dce4; touch-action: pan-y; }
@@ -645,7 +640,6 @@
     <div id="drone-gallery">
       <div class="fleet-grid">
         <div class="fleet-head">
-          <span class="eyebrow"><i aria-hidden="true"></i>The fleet</span>
           <h2 id="fleet-title" class="big">One system. A drone for every site.</h2>
           <p class="fleet-desc">Every Lantern drone runs the same software, answers the same camera alerts and returns to the same dock. The airframe is chosen to fit the site.</p>
         </div>

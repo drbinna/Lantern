@@ -12,7 +12,7 @@
   var DRONES = [
     {
       id: 'sentinel', name: 'Sentinel', tab: 'Campus & police',
-      market: 'Campus security, police departments', status: 'Prototype flying indoors', live: true,
+      market: 'Campus security, police departments',
       img: 'assets/drone-sentinel.webp',
       alt: 'Concept render of Lantern Sentinel: a white shelled quadcopter with prop guards, a cobalt accent band and a camera gimbal under the nose',
       note: 'Concept render',
@@ -26,7 +26,7 @@
     },
     {
       id: 'quiver', name: 'Quiver', tab: 'Agriculture',
-      market: 'Farms and ranches', status: 'Evaluating',
+      market: 'Farms and ranches',
       img: 'assets/drone-quiver.webp',
       alt: 'Render of Arrow Air Project Quiver: a large open-source carbon-fiber quadcopter with folding arms and payload mounts',
       note: 'Render from Arrow Air’s open CAD',
@@ -41,7 +41,7 @@
     },
     {
       id: 'ranger', name: 'Ranger', tab: 'Mining',
-      market: 'Mines and large industrial sites', status: 'Concept',
+      market: 'Mines and large industrial sites',
       img: 'assets/drone-ranger.webp',
       alt: 'Concept render of Lantern Ranger: a white fixed-wing VTOL aircraft with four lift rotors on twin booms, an H-tail and a pusher propeller',
       note: 'Concept render',
@@ -80,8 +80,7 @@
         h('p', { className: 'acc-lede' }, d.lede),
         h('dl', { className: 'acc-specs' }, d.specs.map(function (s) {
           return h('div', { key: s[0] }, h('dt', null, s[0]), h('dd', null, s[1]));
-        })),
-        h('p', { className: 'acc-status' + (d.live ? ' live' : '') }, h('i', { 'aria-hidden': 'true' }), d.status)
+        }))
       )
     );
   }
@@ -116,7 +115,6 @@
 
     return h('div', { className: 'fleet-grid' },
       h('div', { className: 'fleet-head' },
-        h('span', { className: 'eyebrow' }, h('i', { 'aria-hidden': 'true' }), 'The fleet'),
         h('h2', { id: 'fleet-title', className: 'big' }, 'One system. A drone for every site.'),
         h('p', { className: 'fleet-desc' }, 'Every Lantern drone runs the same software, answers the same camera alerts and returns to the same dock. The airframe is chosen to fit the site: guarded rotors over a campus, heavy lift over a farm, wings over a mine.'),
         h('ul', { className: 'chips', 'aria-label': 'Fleet at a glance' }, STATS.map(function (s) { return h('li', { key: s }, s); }))
@@ -152,7 +150,7 @@
         ),
         cur.credit
           ? h('p', { className: 'stage-credit' }, h('a', { href: cur.credit.href, target: '_blank', rel: 'noopener' }, cur.credit.text))
-          : h('p', { className: 'stage-credit' }, 'Sentinel and Ranger are working names.')
+          : null
       ),
 
       h('div', { className: 'fleet-list' },
