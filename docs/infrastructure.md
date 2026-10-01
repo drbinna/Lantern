@@ -37,23 +37,23 @@ Details for email: [email.md](email.md).
 2. Push to `main`, and Vercel deploys automatically.
 3. Check https://lanternaero.com.
 
-### Waitlist
+### Request a demo
 
-The "Join the waitlist" form (`#waitlist` in `index.html`) posts to `api/waitlist.js`, a
-Vercel serverless function. Each signup is added as a contact to a Brevo list (so the
-waitlist can be emailed later) and, if configured, sends the team a notification email.
-A hidden honeypot field drops most bot submissions.
+The "Request a demo" form (`#demo` in `index.html`) posts to `api/demo.js`, a Vercel
+serverless function. Each request emails the team a notification with every field the
+person filled in (reply to it to answer them directly), and adds them as a contact to
+the Brevo list "Demo requests". A hidden honeypot field drops most bot submissions.
 
 Set these in the Vercel project's environment variables (never in this repo):
 
 | Variable | What it is |
 |---|---|
 | `BREVO_API_KEY` | Brevo API key (v3). Brevo → SMTP & API → API keys |
-| `BREVO_WAITLIST_LIST_ID` | Numeric id of the "Waitlist" list in Brevo → Contacts → Lists |
-| `WAITLIST_NOTIFY_EMAIL` | Optional. Where signup notifications go |
-| `WAITLIST_SENDER_EMAIL` | Optional. Verified Brevo sender for those notifications |
+| `BREVO_DEMO_LIST_ID` | Numeric id of the "Demo requests" list (Brevo → CRM → Lists) |
+| `DEMO_NOTIFY_EMAIL` | Where requests are sent |
+| `DEMO_SENDER_EMAIL` | Optional. Verified Brevo sender for the notification |
 
-Without the first two, the form shows a message pointing people to email instead.
+Without these, the form shows a message pointing people to email instead.
 
 ### Hero video
 
