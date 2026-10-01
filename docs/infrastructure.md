@@ -37,6 +37,24 @@ Details for email: [email.md](email.md).
 2. Push to `main`, and Vercel deploys automatically.
 3. Check https://lanternaero.com.
 
+### Waitlist
+
+The "Join the waitlist" form (`#waitlist` in `index.html`) posts to `api/waitlist.js`, a
+Vercel serverless function. Each signup is added as a contact to a Brevo list (so the
+waitlist can be emailed later) and, if configured, sends the team a notification email.
+A hidden honeypot field drops most bot submissions.
+
+Set these in the Vercel project's environment variables (never in this repo):
+
+| Variable | What it is |
+|---|---|
+| `BREVO_API_KEY` | Brevo API key (v3). Brevo → SMTP & API → API keys |
+| `BREVO_WAITLIST_LIST_ID` | Numeric id of the "Waitlist" list in Brevo → Contacts → Lists |
+| `WAITLIST_NOTIFY_EMAIL` | Optional. Where signup notifications go |
+| `WAITLIST_SENDER_EMAIL` | Optional. Verified Brevo sender for those notifications |
+
+Without the first two, the form shows a message pointing people to email instead.
+
 ### Hero video
 
 `assets/lantern-hero.mp4` is a 12-second rendered loop of the Lantern system: a camera
