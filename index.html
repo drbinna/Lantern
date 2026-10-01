@@ -239,6 +239,26 @@
   .open { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 80px); align-items: start; }
   .open p { max-width: var(--measure); color: var(--ink-2); margin: 0 0 16px; }
 
+  /* ---------- Waitlist ---------- */
+  .waitlist { margin-top: clamp(48px, 7vw, 96px); margin-bottom: clamp(24px, 4vw, 48px); }
+  .wl-card { display: grid; grid-template-columns: 1fr 1.15fr; gap: clamp(24px, 4vw, 64px); align-items: center; padding: clamp(28px, 4.5vw, 56px); border-radius: 18px; background: var(--panel); border: 1px solid var(--rule); }
+  .wl-copy .eyebrow { margin: 0 0 10px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--cobalt); }
+  .wl-copy h2 { margin: 0 0 12px; font-size: clamp(28px, 3.6vw, 44px); line-height: 1.08; letter-spacing: -0.015em; }
+  .wl-copy p { margin: 0; max-width: 46ch; color: var(--ink-2); }
+  .wl-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .wl-form label { display: grid; gap: 6px; font-size: 14px; font-weight: 500; color: var(--ink); }
+  .wl-form .full { grid-column: 1 / -1; }
+  .wl-form input, .wl-form select { font: inherit; font-size: 16px; color: var(--ink); padding: 12px 14px; border: 1.5px solid var(--rule); border-radius: 8px; background: var(--paper); width: 100%; min-width: 0; }
+  .wl-form input:focus, .wl-form select:focus { outline: none; border-color: var(--cobalt); box-shadow: 0 0 0 3px rgba(31,79,216,.18); }
+  .wl-form button { grid-column: 1 / -1; font: inherit; font-size: 16px; font-weight: 500; padding: 14px 18px; border: 0; border-radius: 8px; background: var(--cobalt); color: #fff; cursor: pointer; transition: background .2s; }
+  .wl-form button:hover { background: var(--cobalt-deep); }
+  .wl-form button[disabled] { opacity: .65; cursor: progress; }
+  .wl-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .wl-note { grid-column: 1 / -1; margin: 0; min-height: 1.4em; font-size: 14px; color: var(--ink-2); }
+  .wl-note.err { color: #b42318; }
+  .wl-done { grid-column: 1 / -1; margin: 0; padding: 18px; border-radius: 8px; background: var(--paper); border: 1px solid var(--rule); font-weight: 500; }
+  @media (max-width: 860px) { .wl-card { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) { .wl-form { grid-template-columns: 1fr; } }
   .foot { position: relative; overflow: hidden; margin: clamp(16px, 3vw, 32px); border-radius: 24px; background: #0b1730; color: rgba(245,247,251,.72); }
   .foot-inner { position: relative; z-index: 2; max-width: 1280px; margin: 0 auto; padding: clamp(36px, 5vw, 64px) clamp(24px, 4vw, 56px) clamp(24px, 3vw, 40px); }
   .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: clamp(28px, 4vw, 64px); padding-bottom: clamp(28px, 4vw, 48px); }
@@ -354,6 +374,7 @@
           <li><a href="#fleet">The fleet</a></li>
           <li><a href="#next">Where we're going</a></li>
           <li><a href="#limits">Lines we don't cross</a></li>
+          <li><a href="#waitlist">Join the waitlist</a></li>
           <li><a class="pill" href="#contact">Set up a pilot</a></li>
         </ul>
       </nav>
@@ -651,6 +672,33 @@
       </div>
     </div>
   </section>
+  <section id="waitlist" class="wrap waitlist" aria-labelledby="wl-title">
+    <div class="wl-card">
+      <div class="wl-copy">
+        <p class="eyebrow">Waitlist</p>
+        <h2 id="wl-title">Get added to the waitlist.</h2>
+        <p>We're starting with campus pilots in Tulsa. Leave your email and we'll tell you when Lantern is ready for your site, plus the occasional update on what we're building.</p>
+      </div>
+      <form class="wl-form" id="wlForm" novalidate>
+        <label>Name <input name="name" type="text" autocomplete="name" maxlength="100" placeholder="Optional"></label>
+        <label>Work email <input name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@organization.com"></label>
+        <label class="full">I'm interested for
+          <select name="segment">
+            <option>Campus security</option>
+            <option>Police department</option>
+            <option>Construction</option>
+            <option>Agriculture</option>
+            <option>Mining</option>
+            <option>Investor or partner</option>
+            <option>Other</option>
+          </select>
+        </label>
+        <div class="wl-hp" aria-hidden="true"><label>Website <input name="company_site" type="text" tabindex="-1" autocomplete="off"></label></div>
+        <button type="submit">Join the waitlist</button>
+        <p class="wl-note" id="wlNote" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
 </main>
 
 <footer id="contact" class="foot">
@@ -669,6 +717,7 @@
           <li><a href="#next">Markets and roadmap</a></li>
           <li><a href="#limits">Lines we don't cross</a></li>
           <li><a href="#fleet">The fleet</a></li>
+          <li><a href="#waitlist">Join the waitlist</a></li>
         </ul>
       </div>
       <div>
@@ -726,6 +775,34 @@
   <div class="foot-bg" aria-hidden="true"></div>
 </footer>
 
+<script>
+(function () {
+  var form = document.getElementById('wlForm');
+  if (!form) return;
+  var note = document.getElementById('wlNote');
+  var btn = form.querySelector('button');
+  function say(msg, err) { note.textContent = msg; note.className = 'wl-note' + (err ? ' err' : ''); }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var data = {
+      name: form.name.value, email: form.email.value.trim(),
+      segment: form.segment.value, company_site: form.company_site.value
+    };
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email)) { say('Please enter a valid email address.', true); form.email.focus(); return; }
+    btn.disabled = true; btn.textContent = 'Adding you…'; say('');
+    fetch('/api/waitlist', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(data) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.j.error || 'Something went wrong. Please try again.');
+        form.innerHTML = '<p class="wl-done" role="status">You\u2019re on the list. We\u2019ll be in touch from obi@lanternaero.com.</p>';
+      })
+      .catch(function (err) {
+        btn.disabled = false; btn.textContent = 'Join the waitlist';
+        say(err.message || 'Something went wrong. Please try again.', true);
+      });
+  });
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin="anonymous" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous" defer></script>
 <script src="assets/gap-race.js" defer></script>
