@@ -302,13 +302,12 @@
     .row, .axis { grid-template-columns: 1fr; gap: 8px; }
     .fill.tiny span { margin-left: calc(100% + 8px); font-size: 14px; }
   }
-  /* ---- gallery grid (assets/gallery-grid.js): drones and docks in "Three parts" ---- */
-  .product .stage, .product .gal { aspect-ratio: 3 / 2; margin-bottom: 22px; }
-  .product .stage { display: grid; place-items: center; }
-  .product .stage svg { width: 100%; height: 100%; }
+  /* ---- gallery grid (assets/gallery-grid.js): the three cards in "Three parts" ---- */
+  .product .gal { aspect-ratio: 3 / 2; margin-bottom: 22px; }
   .gal-grid { list-style: none; margin: 0; padding: 0; height: 100%; display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px; }
   .gal-grid li { min-width: 0; min-height: 0; }
   .gal-grid li:first-child { grid-row: 1 / span 2; }
+  .gal-grid li:nth-child(2):last-child { grid-row: 1 / span 2; }
   .gal-card { all: unset; box-sizing: border-box; cursor: zoom-in; position: relative; display: block; width: 100%; height: 100%; overflow: hidden; border-radius: 16px; background: #d5dce5; }
   .gal-grid li:not(:first-child) .gal-card { border-radius: 12px; }
   .gal-card:focus-visible { outline: 3px solid var(--cobalt); outline-offset: 3px; }
@@ -511,24 +510,11 @@
     <p class="spec-note">Figures below are design targets for the product. Today we fly a working prototype: an X650 airframe on a Pixhawk flight controller running PX4, with an NVIDIA Jetson Orin NX onboard computer.</p>
     <div class="products">
       <article class="product">
-        <div class="stage" aria-hidden="true">
-          <svg viewBox="0 0 400 300" width="100%" role="img" aria-label="Illustration of a Lantern 360-degree camera station on a pole">
-            <ellipse cx="200" cy="268" rx="90" ry="14" fill="#0d1b33" opacity=".08"/>
-            <ellipse cx="200" cy="120" rx="150" ry="40" fill="#1f4fd8" opacity=".07"/>
-            <ellipse cx="200" cy="120" rx="150" ry="40" fill="none" stroke="#1f4fd8" stroke-width="2" stroke-dasharray="4 5"/>
-            <ellipse cx="200" cy="120" rx="96" ry="26" fill="none" stroke="#1f4fd8" stroke-width="1.5" opacity=".45"/>
-            <rect x="192" y="126" width="16" height="136" rx="3" fill="#d5dae2"/>
-            <rect x="196" y="126" width="6" height="136" fill="#ffffff" opacity=".7"/>
-            <ellipse cx="200" cy="262" rx="28" ry="8" fill="#c3c9d3"/>
-            <rect x="170" y="92" width="60" height="30" rx="6" fill="#ffffff" stroke="#cfd6df" stroke-width="1.5"/>
-            <path d="M172,122 a28,22 0 0 0 56,0 z" fill="#0d1b33"/>
-            <circle cx="186" cy="130" r="4" fill="#1f4fd8"/>
-            <circle cx="200" cy="134" r="4" fill="#1f4fd8"/>
-            <circle cx="214" cy="130" r="4" fill="#1f4fd8"/>
-            <rect x="182" y="76" width="36" height="16" rx="3" fill="#eef1f4" stroke="#cfd6df"/>
-            <line x1="200" y1="76" x2="200" y2="58" stroke="#b4b9c3" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="200" cy="56" r="4" fill="#1f4fd8"/>
-          </svg>
+        <div class="gal" data-gallery="station">
+          <ul class="gal-grid">
+            <li><span class="gal-card"><img src="assets/station-head.webp" alt="Concept render of the Lantern camera station head, a white drum with a dark band of cameras and a cobalt light ring" width="1100" height="1100" loading="lazy" decoding="async"><span class="gal-name">Sensor head</span></span></li>
+            <li><span class="gal-card"><img src="assets/station-full.webp" alt="Concept render of the full Lantern camera station on a 4 metre pole beside a person" width="1100" height="1100" loading="lazy" decoding="async"><span class="gal-name">On its pole</span></span></li>
+          </ul>
         </div>
         <h3>Camera station</h3>
         <p class="lede">The eyes that never leave. A 360° station on a pole or rooftop that watches its area and calls a drone when it sees something worth a closer look.</p>
