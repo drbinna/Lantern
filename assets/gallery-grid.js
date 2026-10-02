@@ -1,10 +1,10 @@
-/* Gallery grid with lightbox, used twice in "Three parts. One system.":
-   once for the three drones and once for the three docks.
+/* Gallery grid with lightbox, used on all three cards in "Three parts. One system.":
+   the camera station, the three drones and the three docks.
    Ported from a shadcn GalleryGridBlock (cards with a hover overlay, click to
    open a lightbox with previous/next) to React 18 UMD + plain CSS, no build
    step. The source's heading and category filter are left out: each gallery
-   sits inside a product card and holds three images.
-   Mount point: <div class="gal" data-gallery="drones|docks">. */
+   sits inside a product card and holds two or three images.
+   Mount point: <div class="gal" data-gallery="station|drones|docks">. */
 (function () {
   if (!window.React || !window.ReactDOM) return;
 
@@ -12,6 +12,19 @@
   var useState = React.useState, useEffect = React.useEffect, useRef = React.useRef;
 
   var SETS = {
+    station: {
+      label: 'Lantern camera station',
+      items: [
+        {
+          id: 'station-head', title: 'Sensor head', tag: '360° day and thermal', img: 'assets/station-head.webp',
+          alt: 'Concept render of the Lantern camera station head: a white drum with a dark band holding four camera pairs, a cobalt light ring, a sunshade cap, and a finned computer box on the pole below'
+        },
+        {
+          id: 'station-full', title: 'On its pole', tag: 'About 4 m tall', img: 'assets/station-full.webp',
+          alt: 'Concept render of the full Lantern camera station on a 4 metre pole with a ballast base, beside a person for scale'
+        }
+      ]
+    },
     drones: {
       label: 'Lantern drones',
       items: [
