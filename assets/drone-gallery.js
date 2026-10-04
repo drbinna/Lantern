@@ -158,7 +158,7 @@
           return h(Item, { key: d.id, d: d, open: i === active, onPick: function () { pick(i); } });
         })),
         h('div', { className: 'fleet-cta' },
-          h('a', { className: 'btn primary', href: 'mailto:obi@lanternaero.com?subject=Lantern%20pilot' }, 'Set up a pilot'),
+          h('a', { className: 'btn primary', href: 'mailto:hello@lanternaero.com?subject=Lantern%20pilot' }, 'Set up a pilot'),
           h('a', { className: 'btn', href: '#how' }, 'See how a response works')
         ),
         h('p', { className: 'fleet-trust' }, 'Whatever flies, the rules stay the same. Each site publishes a flight log of what triggered each flight and how long it lasted, and footage is deleted after 30 days.')
