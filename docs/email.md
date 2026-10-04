@@ -3,7 +3,7 @@
 Lantern's email runs on three free services stitched together. Each person reads and
 writes Lantern mail in a Gmail inbox, and recipients only ever see `@lanternaero.com`.
 
-Public contact address: **obi@lanternaero.com**
+Public contact address: **hello@lanternaero.com**
 
 ## How it works
 

@@ -724,7 +724,7 @@
       <div>
         <h4>Contact</h4>
         <ul class="contact">
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><a href="mailto:obi@lanternaero.com">obi@lanternaero.com</a></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><a href="mailto:hello@lanternaero.com">hello@lanternaero.com</a></li>
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg><a href="tel:+19183701689">+1 (918) 370-1689</a></li>
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Tulsa, Oklahoma</span></li>
         </ul>
@@ -788,7 +788,7 @@
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (res) {
         if (!res.ok) throw new Error(res.j.error || 'Something went wrong. Please try again.');
-        form.innerHTML = '<p class="dm-done" role="status">Thanks, ' + data.name.split(' ')[0].replace(/[<>&]/g, '') + '. We\u2019ll reply from obi@lanternaero.com within one business day to set up a time.</p>';
+        form.innerHTML = '<p class="dm-done" role="status">Thanks, ' + data.name.split(' ')[0].replace(/[<>&]/g, '') + '. We\u2019ll reply from hello@lanternaero.com within one business day to set up a time.</p>';
       })
       .catch(function (err) {
         btn.disabled = false; btn.textContent = 'Request a demo';

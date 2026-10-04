@@ -73,7 +73,7 @@ module.exports = async function handler(req, res) {
   const notify = process.env.DEMO_NOTIFY_EMAIL;
   if (!key || !listId || !notify) {
     console.error("Demo requests are not configured: missing BREVO_API_KEY, BREVO_DEMO_LIST_ID or DEMO_NOTIFY_EMAIL");
-    return res.status(503).json({ error: "Requests aren't open yet. Email obi@lanternaero.com instead." });
+    return res.status(503).json({ error: "Requests aren't open yet. Email hello@lanternaero.com instead." });
   }
 
   // The notification is the part that matters most, so it goes first.
@@ -99,7 +99,7 @@ module.exports = async function handler(req, res) {
     }, key);
   } catch (err) {
     console.error(err.message);
-    return res.status(502).json({ error: "Something went wrong. Please try again, or email obi@lanternaero.com." });
+    return res.status(502).json({ error: "Something went wrong. Please try again, or email hello@lanternaero.com." });
   }
 
   try {
